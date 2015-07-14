@@ -1,0 +1,35 @@
+{
+    "common": {
+        "name":                     "vis-colorpicker",
+        "version": "0.1.0",
+        "title":                    "ioBroker Visualisation - color picker style Widgets",
+        "desc": {
+            "en":                   "Color picker Widgets for ioBroker.vis",
+            "de":                   "Color picker Widgets für ioBroker.vis",
+            "ru":                   "Выбор цвета Widgets для ioBroker.vis"
+        },
+        "platform":                 "Javascript/Node.js",
+        "loglevel":                 "info",
+        "icon":                     "colorpicker.png",
+        "enabled":                  true,
+        "mode":                     "once",
+        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.vis-colorpicker/master/admin/colorpicker.png",
+        "keywords":                 ["color picker", "star trek", "vis", "GUI", "graphical", "scada"],
+        "readme":                   "https://github.com/ioBroker/ioBroker.vis-colorpicker/blob/master/README.md",
+        "authors": [
+            "hobbyquaker <hq@ccu.io>",
+			"bluefox <dogafox@gmail.com>"
+        ],
+        "localLink":                "%web_protocol%://%ip%:%web_port%/vis/edit.html",
+        "license":                  "MIT",
+        "dependencies":             ["vis"],
+        "onlyWWW":                  true,
+        "singleton":                true,
+        "type":                     "vis",
+		"restartAdapters":          ["vis"]
+    },
+    "native": {
+    },
+    "instanceObjects": [
+    ]
+}
