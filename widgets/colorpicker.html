@@ -141,7 +141,6 @@
                 $this.spectrum("set", {r:r, g:g, b:b});
             });
             $this.change(function() {
-                console.log($this.val());
                 var color = $this.spectrum('get').toRgb();
                 var r = (parseFloat(color.r) / factor).toFixed(3);
                 var g = (parseFloat(color.g) / factor).toFixed(3);
