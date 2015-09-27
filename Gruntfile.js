@@ -13,6 +13,7 @@ module.exports = function (grunt) {
     var iopackage = grunt.file.readJSON('io-package.json');
     var version   = (pkg && pkg.version) ? pkg.version : iopackage.common.version;
 
+    console.log(srcDir + 'widgets/' + pkg.name.substring('iobroker.vis-'.length) + '/js/' + pkg.name.substring('iobroker.vis-'.length) + '.js');
     // Project configuration.
     grunt.initConfig({
         pkg: pkg,
@@ -25,12 +26,16 @@ module.exports = function (grunt) {
                 options: {
                     patterns: [
                         {
-                            match: /var version = *'[\.0-9]*';/g,
-                            replacement: "var version = '" + version + "';"
+                            match: /version: *"[\.0-9]*"/g,
+                            replacement: 'version: "' + version + '"'
                         },
                         {
-                            match: /"version"\: *"[\.0-9]*",/g,
+                            match: /"version":\s*"[\.0-9]*",/g,
                             replacement: '"version": "' + version + '",'
+                        },
+                        {
+                            match: /version: *"[\.0-9]*",/g,
+                            replacement: 'version: "' + version + '",'
                         }
                     ]
                 },
@@ -39,11 +44,26 @@ module.exports = function (grunt) {
                         expand:  true,
                         flatten: true,
                         src:     [
-                                srcDir + 'controller.js',
-                                srcDir + 'package.json',
-                                srcDir + 'io-package.json'
+                            srcDir + 'package.json',
+                            srcDir + 'io-package.json'
                         ],
                         dest:    srcDir
+                    },
+                    {
+                        expand:  true,
+                        flatten: true,
+                        src:     [
+                            srcDir + 'widgets/' + pkg.name.substring('iobroker.vis-'.length) + '.html'
+                        ],
+                        dest:    srcDir + 'widgets'
+                    },
+                    {
+                        expand:  true,
+                        flatten: true,
+                        src:     [
+                            srcDir + 'widgets/' + pkg.name.substring('iobroker.vis-'.length) + '/js/' + pkg.name.substring('iobroker.vis-'.length) + '.js'
+                        ],
+                        dest:    srcDir + 'widgets/' + pkg.name.substring('iobroker.vis-'.length) + '/js/'
                     }
                 ]
             }
@@ -53,7 +73,7 @@ module.exports = function (grunt) {
         // Lint
         jshint: require(__dirname + '/tasks/jshint.js'),
         http: {
-            /*get_hjscs: {
+            get_hjscs: {
                 options: {
                     url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jscs.js'
                 },
@@ -64,103 +84,24 @@ module.exports = function (grunt) {
                     url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jshint.js'
                 },
                 dest: 'tasks/jshint.js'
-            },
+            },/*
             get_gruntfile: {
                 options: {
                     url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.build/master/adapters/Gruntfile.js'
                 },
                 dest: 'Gruntfile.js'
-            },*/
+            },
             get_utilsfile: {
                 options: {
                     url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.build/master/adapters/utils.js'
                 },
                 dest: 'lib/utils.js'
-            },
+            },*/
             get_jscsRules: {
                 options: {
                     url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jscsRules.js'
                 },
                 dest: 'tasks/jscsRules.js'
-            },
-            get_iconOnline: {
-                options: {
-                    encoding: null,
-                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png'
-                },
-                dest: dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.png'
-
-            },
-            get_iconOffline: {
-                options: {
-                    encoding: null,
-                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png'
-                },
-                dest: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.png'
-
-            }
-        },
-        compress: {
-            adapter: {
-                options: {
-                    archive: dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.zip'
-                },
-                files: [
-                    {
-                        expand: true,
-                        src: ['**', '!tasks/*', '!Gruntfile.js', '!node_modules/**/*', '!build/**/*'],
-                        dest: '/',
-                        cwd: srcDir
-                    }
-                ]
-            },
-            adapterOffline: {
-                options: {
-                    archive: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.zip'
-                },
-                files: [
-                    {
-                        expand: true,
-                        src: ['**',
-                            '!tasks/*',
-                            '!Gruntfile.js',
-                            '!build/**/*',
-                            '!node_modules/grunt/**/*',
-                            '!node_modules/grunt*/**/*'
-                        ],
-                        dest: '/',
-                        cwd: srcDir
-                    }
-                ]
-            }
-        },
-        exec: {
-            npm: {
-                cmd: 'npm install'
-            }
-        },
-        copy: {
-            json: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: srcDir,
-                        src: ['io-package.json'],
-                        dest: dstDir,
-                        rename: function (dest, src) {
-                            return dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.json';
-                        }
-                    },
-                    {
-                        expand: true,
-                        cwd: srcDir,
-                        src: ['io-package.json'],
-                        dest: dstDir,
-                        rename: function (dest, src) {
-                            return dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.json';
-                        }
-                    }
-                ]
             }
         }
     });
@@ -204,14 +145,15 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask('default', [
-        'exec',
         'http',
         'clean',
         'replace',
         'updateReadme',
-        'compress',
-        'copy',
         'jshint',
         'jscs'
+    ]);
+    grunt.registerTask('prepublish', [
+        'http',
+        'replace'
     ]);
 };
