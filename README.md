@@ -7,6 +7,9 @@ colorpicker (Star trek) widget sets for ioBroker.vis
 
 ## Changelog
 
+### 0.1.2 (2016-01-25)
+- (bluefox) enable ID Select dialog
+
 ### 0.1.1 (2015-09-27)
 - (bluefox) update packets
 

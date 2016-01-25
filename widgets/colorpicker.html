@@ -1,9 +1,9 @@
 <!--
     ioBroker.vis bars Widget-Set
 
-    version: "0.1.1"
+    version: "0.1.2"
 
-    Copyright 2013-2015 hobbyquaker https://github.com/hobbyquaker, bluefox https://github.com/GermanBluefox
+    Copyright 2013-2016 hobbyquaker https://github.com/hobbyquaker, bluefox https://github.com/GermanBluefox
 -->
 
 <!--<script type="text/javascript" src="widgets/colorpicker/js/jscolor.js"></script>-->
@@ -17,22 +17,22 @@
     
     if (vis.language == 'de'){
         var localization = $.spectrum.localization.de = {
-            cancelText: 'Abbrechen',
-            chooseText: 'Wählen',
-            clearText: 'Farbauswahl zurücksetzen',
-            noColorSelectedText: 'Keine Farbe ausgewählt',
-            togglePaletteMoreText: 'Mehr',
-            togglePaletteLessText: 'Weniger'
+            cancelText: 			'Abbrechen',
+            chooseText: 			'Wählen',
+            clearText: 				'Farbauswahl zurücksetzen',
+            noColorSelectedText: 	'Keine Farbe ausgewählt',
+            togglePaletteMoreText: 	'Mehr',
+            togglePaletteLessText: 	'Weniger'
         };
         $.extend($.fn.spectrum.defaults, localization);
     } else if (vis.language == 'ru'){
         var localization = $.spectrum.localization.ru = {
-            cancelText: 'отмена',
-            chooseText: 'выбрать',
-            clearText: 'сбросить',
-            noColorSelectedText: 'никакой цвет не выбран',
-            togglePaletteMoreText: 'больше',
-            togglePaletteLessText: 'меньше'
+            cancelText: 			'отмена',
+            chooseText: 			'выбрать',
+            clearText: 				'сбросить',
+            noColorSelectedText: 	'никакой цвет не выбран',
+            togglePaletteMoreText: 	'больше',
+            togglePaletteLessText: 	'меньше'
         };
         $.extend($.fn.spectrum.defaults, localization);
     }
@@ -48,11 +48,11 @@
     }
 
     vis.binds.colorpicker = {
-		version: "0.1.1",
+		version: "0.1.2",
 		showVersion: function () {
-			if (vis.binds.bars.version) {
-				console.log('Version vis-bars:' + vis.binds.bars.version);
-				vis.binds.bars.version = null;
+			if (vis.binds.colorpicker.version) {
+				console.log('Version vis-colorpicker: ' + vis.binds.colorpicker.version);
+				vis.binds.colorpicker.version = null;
 			}
 		},
         /*jscolor: function (el) {
@@ -69,7 +69,6 @@
             return {r: r, g: g, b: b};
         },
         farbtastic: function (el, r_id, g_id, b_id, factor) {
-			vis.binds.colorpicker.showVersion();
             var $this = jQuery(el);
             $this.hide();
 
@@ -123,7 +122,6 @@
             });
         },
         spectrum: function (el, r_id, g_id, b_id, factor) {
-			vis.binds.colorpicker.showVersion();
             r_id = r_id || 'nothing_selected';
             g_id = g_id || 'nothing_selected';
             b_id = b_id || 'nothing_selected';
@@ -155,7 +153,7 @@
                 var r = parseInt(parseFloat(vis.states[r_id + '.val'] || 0) * factor, 10);
                 var g = parseInt(parseFloat(vis.states[g_id + '.val'] || 0) * factor, 10);
                 var b = parseInt(parseFloat(newVal) * factor, 10);
-                $this.spectrum("set", {r:r, g:g, b:b});
+                $this.spectrum('set', {r:r, g:g, b:b});
             });
             $this.change(function() {
                 var color = $this.spectrum('get').toRgb();
@@ -167,7 +165,7 @@
                         vis.states[r_id + '.val'] = r;
                         vis.setValue(r_id, r);
                     }
-                    if (g_id && g_id !== 'nothing_selected'){
+                    if (g_id && g_id !== 'nothing_selected') {
                         vis.states[g_id + '.val'] = g;
                         vis.setValue(g_id, g);
                     }
@@ -179,6 +177,7 @@
             });
         }
     };
+	vis.binds.colorpicker.showVersion();
 </script>
 
 <script id="tplRGBSpectrum"
@@ -188,7 +187,7 @@
         data-vis-set="colorpicker"
         data-vis-type="ctrl,color"
         data-vis-name="RGB spectrum"
-        data-vis-attrs="red-oid;green-oid;blue-oid;divisor[255]">
+        data-vis-attrs="red-oid/id;green-oid/id;blue-oid/id;divisor[255]">
     <div class="vis-widget <%== this.data.attr('class') %>" style="" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
             <input id="<%= this.data.attr('wid') %>_spectrum" value="" <%= (el) -> vis.binds.colorpicker.spectrum(el, data.attr('red-oid'), data.attr('green-oid'), data.attr('blue-oid'), data.attr('divisor')) %>>
@@ -203,7 +202,7 @@
         data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplRGBFarbtastic.png"></img>'
         data-vis-set="colorpicker"
         data-vis-name="ctrl - rgb farbtastic" 
-        data-vis-attrs="red-oid;green-oid;blue-oid;divisor[255]">
+        data-vis-attrs="red-oid/id;green-oid/id;blue-oid/id;divisor[255]">
     <div class="vis-widget <%== this.data.attr('class') %>" style="width: 196px; height: 196px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
             <div id="<%= this.data.attr('wid') %>_farbtastic"></div>
@@ -214,7 +213,12 @@
 
         <!--
 
-<script type="text/ejs" id="tplJscolor" class="vis-tpl" data-vis-set="colorpicker" data-vis-name="jscolor" data-vis-attrs="hue_id;sat_id;bri_id">
+<script id="tplJscolor" 
+		type="text/ejs" 
+		class="vis-tpl" 
+		data-vis-set="colorpicker" 
+		data-vis-name="jscolor" 
+		data-vis-attrs="hue-id/id;sat-oid/id;bri-oid/id">
     <div class="vis-widget <%== this.data.attr('class') %>" style="width: 200px; height: 130px; border: 1px solid #000; background: #fff;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
             <input id="<%= this.data.attr('wid') %>_jscolor">
