@@ -6,6 +6,8 @@ colorpicker (Star trek) widget sets for ioBroker.vis
 ![Example](img/widgets.png)
 
 ## Changelog
+### 0.1.3 (2016-01-25)
+- (bluefox) add precision
 
 ### 0.1.2 (2016-01-25)
 - (bluefox) enable ID Select dialog

@@ -1,7 +1,7 @@
 <!--
     ioBroker.vis bars Widget-Set
 
-    version: "0.1.2"
+    version: "0.1.3"
 
     Copyright 2013-2016 hobbyquaker https://github.com/hobbyquaker, bluefox https://github.com/GermanBluefox
 -->
@@ -43,12 +43,13 @@
             "red-oid":      {"en": "Red ID",    "de": "Rot ID",     "ru": "Красный ID"},
             "green-oid":    {"en": "Green ID",  "de": "Grün ID",    "ru": "Зелёный ID"},
             "blue-oid":     {"en": "Blue ID",   "de": "Blau ID",    "ru": "Синий ID"},
-            "divisor":      {"en": "divisor",   "de": "Divisor",    "ru": "Делитель"}
+            "divisor":      {"en": "divisor",   "de": "Divisor",    "ru": "Делитель"},
+			"decimal": 		{"en": "Precision", "de": "Nach Komma", "ru": "Чисел посля запятой"}
         });
     }
 
     vis.binds.colorpicker = {
-		version: "0.1.2",
+		version: "0.1.3",
 		showVersion: function () {
 			if (vis.binds.colorpicker.version) {
 				console.log('Version vis-colorpicker: ' + vis.binds.colorpicker.version);
@@ -68,19 +69,21 @@
             var b = parseInt(hex.substr(5, 2), 16);
             return {r: r, g: g, b: b};
         },
-        farbtastic: function (el, r_id, g_id, b_id, factor) {
-            var $this = jQuery(el);
+        farbtastic: function (el, r_id, g_id, b_id, factor, decimal) {
+            var $this = $(el);
             $this.hide();
 
             r_id = r_id || 'nothing_selected';
             g_id = g_id || 'nothing_selected';
             b_id = b_id || 'nothing_selected';
+			decimal = parseInt(decimal || 0, 10) || 0;
+			factor  = parseFloat(factor) || 255;
 
             var ft = $.farbtastic($this.prev(), function () {
                 var color = vis.binds.colorpicker.hex2rgb(this.color);
-                var r = (parseFloat(color.r) / factor).toFixed(3);
-                var g = (parseFloat(color.g) / factor).toFixed(3);
-                var b = (parseFloat(color.b) / factor).toFixed(3);
+                var r = (parseFloat(color.r) / factor).toFixed(decimal);
+                var g = (parseFloat(color.g) / factor).toFixed(decimal);
+                var b = (parseFloat(color.b) / factor).toFixed(decimal);
                 if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
                     if (r_id && r_id !== 'nothing_selected') {
                         vis.states[r_id + '.val'] = r;
@@ -97,79 +100,87 @@
                 }
             });
 
-            var r = parseInt(parseFloat(vis.states[r_id + '.val'] || 0) * factor, 10);
-            var g = parseInt(parseFloat(vis.states[g_id + '.val'] || 0) * factor, 10);
-            var b = parseInt(parseFloat(vis.states[b_id + '.val'] || 0) * factor, 10);
+            var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
+            var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
+            var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
             ft.setColor(vis.binds.colorpicker.rgb2hex(r, g, b));
 
-            vis.states.bind(r_id + '.val', function(e, newVal, oldVal) {
-                var r = parseInt(parseFloat(newVal) * factor, 10);
-                var g = parseInt(parseFloat(vis.states[g_id + '.val'] || 0) * factor, 10);
-                var b = parseInt(parseFloat(vis.states[b_id + '.val'] || 0) * factor, 10);
-                ft.setColor(vis.binds.colorpicker.rgb2hex(r, g, b));
-            });
-            vis.states.bind(g_id + '.val', function(e, newVal, oldVal) {
-                var r = parseInt(parseFloat(vis.states[r_id + '.val'] || 0) * factor, 10);
-                var g = parseInt(parseFloat(newVal) * factor, 10);
-                var b = parseInt(parseFloat(vis.states[b_id + '.val'] || 0) * factor, 10);
-                ft.setColor(vis.binds.colorpicker.rgb2hex(r, g, b));
-            });
-            vis.states.bind(b_id + '.val', function( e, newVal, oldVal ) {
-                var r = parseInt(parseFloat(vis.states[r_id + '.val'] || 0) * factor, 10);
-                var g = parseInt(parseFloat(vis.states[g_id + '.val'] || 0) * factor, 10);
-                var b = parseInt(parseFloat(newVal) * factor, 10);
-                ft.setColor(vis.binds.colorpicker.rgb2hex(r, g, b));
-            });
+ 			if (r_id !== 'nothing_selected') {
+				vis.states.bind(r_id + '.val', function(e, newVal, oldVal) {
+					var r = Math.round(parseFloat(newVal) * factor);
+					var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
+					var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
+					ft.setColor(vis.binds.colorpicker.rgb2hex(r, g, b));
+				});
+			}
+ 			if (g_id !== 'nothing_selected') {
+			    vis.states.bind(g_id + '.val', function(e, newVal, oldVal) {
+					var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
+					var g = Math.round(parseFloat(newVal) * factor);
+					var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
+					ft.setColor(vis.binds.colorpicker.rgb2hex(r, g, b));
+				});
+			}
+			if (b_id !== 'nothing_selected') {
+				vis.states.bind(b_id + '.val', function( e, newVal, oldVal ) {
+					var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
+					var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
+					var b = Math.round(parseFloat(newVal) * factor);
+					ft.setColor(vis.binds.colorpicker.rgb2hex(r, g, b));
+				});
+			}
         },
-        spectrum: function (el, r_id, g_id, b_id, factor) {
+        spectrum: function (el, r_id, g_id, b_id, factor, decimal) {
             r_id = r_id || 'nothing_selected';
             g_id = g_id || 'nothing_selected';
             b_id = b_id || 'nothing_selected';
-
-            var $this = jQuery(el);
+			factor  = parseFloat(factor) || 255;
+			decimal = parseInt(decimal || 0, 10) || 0;
+			
+            var $this = $(el);
 
             $this.spectrum({
                 preferredFormat: "rgb"
             });
 
-            var r = parseInt(parseFloat(vis.states[r_id + '.val'] || 0) * factor, 10);
-            var g = parseInt(parseFloat(vis.states[g_id + '.val'] || 0) * factor, 10);
-            var b = parseInt(parseFloat(vis.states[b_id + '.val'] || 0) * factor, 10);
+            var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
+            var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
+            var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
             $this.spectrum("set", {r: r, g: g, b: b});
 
             vis.states.bind(r_id + '.val', function( e, newVal, oldVal ) {
-                var r = parseInt(parseFloat(newVal) * factor, 10);
-                var g = parseInt(parseFloat(vis.states[g_id + '.val'] || 0) * factor, 10);
-                var b = parseInt(parseFloat(vis.states[b_id + '.val'] || 0) * factor, 10);
-                $this.spectrum("set", {r: r, g: g, b: b});
+                var r = Math.round(parseFloat(newVal) * factor, 10);
+                var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
+                var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
+                $this.spectrum('set', {r: r, g: g, b: b});
             });
             vis.states.bind(g_id + '.val', function( e, newVal, oldVal ) {
-                var r = parseInt(parseFloat(vis.states[r_id + '.val'] || 0) * factor, 10);
-                var g = parseInt(parseFloat(newVal) * factor, 10);
-                var b = parseInt(parseFloat(vis.states[b_id + '.val'] || 0) * factor, 10);
-                $this.spectrum("set", {r:r, g:g, b:b});
+                var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
+                var g = Math.round(parseFloat(newVal) * factor, 10);
+                var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
+                $this.spectrum('set', {r:r, g:g, b:b});
             });
             vis.states.bind(b_id + '.val', function( e, newVal, oldVal ) {
-                var r = parseInt(parseFloat(vis.states[r_id + '.val'] || 0) * factor, 10);
-                var g = parseInt(parseFloat(vis.states[g_id + '.val'] || 0) * factor, 10);
-                var b = parseInt(parseFloat(newVal) * factor, 10);
-                $this.spectrum('set', {r:r, g:g, b:b});
+                var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
+                var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
+                var b = Math.round(parseFloat(newVal) * factor, 10);
+                $this.spectrum('set', {r: r, g: g, b: b});
             });
             $this.change(function() {
                 var color = $this.spectrum('get').toRgb();
-                var r = (parseFloat(color.r) / factor).toFixed(3);
-                var g = (parseFloat(color.g) / factor).toFixed(3);
-                var b = (parseFloat(color.b) / factor).toFixed(3);
+                var r = (parseFloat(color.r) / factor).toFixed(decimal);
+                var g = (parseFloat(color.g) / factor).toFixed(decimal);
+                var b = (parseFloat(color.b) / factor).toFixed(decimal);
                 if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
-                    if (r_id && r_id !== 'nothing_selected') {
+                    if (r_id !== 'nothing_selected') {
                         vis.states[r_id + '.val'] = r;
                         vis.setValue(r_id, r);
                     }
-                    if (g_id && g_id !== 'nothing_selected') {
+                    if (g_id !== 'nothing_selected') {
                         vis.states[g_id + '.val'] = g;
                         vis.setValue(g_id, g);
                     }
-                    if (b_id && b_id !== 'nothing_selected') {
+                    if (b_id !== 'nothing_selected') {
                         vis.states[b_id + '.val'] = b;
                         vis.setValue(b_id, b);
                     }
@@ -187,10 +198,10 @@
         data-vis-set="colorpicker"
         data-vis-type="ctrl,color"
         data-vis-name="RGB spectrum"
-        data-vis-attrs="red-oid/id;green-oid/id;blue-oid/id;divisor[255]">
+        data-vis-attrs="red-oid/id;green-oid/id;blue-oid/id;divisor[255];decimal[0]/slider,0,5,1">
     <div class="vis-widget <%== this.data.attr('class') %>" style="" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
-            <input id="<%= this.data.attr('wid') %>_spectrum" value="" <%= (el) -> vis.binds.colorpicker.spectrum(el, data.attr('red-oid'), data.attr('green-oid'), data.attr('blue-oid'), data.attr('divisor')) %>>
+            <input id="<%= this.data.attr('wid') %>_spectrum" value="" <%= (el) -> vis.binds.colorpicker.spectrum(el, data.attr('red-oid'), data.attr('green-oid'), data.attr('blue-oid'), data.attr('divisor'), data.attr('decimal')) %>>
         </div>
     </div>
 </script>
@@ -202,11 +213,11 @@
         data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplRGBFarbtastic.png"></img>'
         data-vis-set="colorpicker"
         data-vis-name="ctrl - rgb farbtastic" 
-        data-vis-attrs="red-oid/id;green-oid/id;blue-oid/id;divisor[255]">
+        data-vis-attrs="red-oid/id;green-oid/id;blue-oid/id;divisor[255];decimal[0]/slider,0,5,1">
     <div class="vis-widget <%== this.data.attr('class') %>" style="width: 196px; height: 196px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
             <div id="<%= this.data.attr('wid') %>_farbtastic"></div>
-            <input id="<%= this.data.attr('wid') %>_farbtastic_input" value="" <%= (el) -> vis.binds.colorpicker.farbtastic(el, data.attr('red-oid'), data.attr('green-oid'), data.attr('blue-oid'), data.attr('divisor')) %>>
+            <input id="<%= this.data.attr('wid') %>_farbtastic_input" value="" <%= (el) -> vis.binds.colorpicker.farbtastic(el, data.attr('red-oid'), data.attr('green-oid'), data.attr('blue-oid'), data.attr('divisor'), data.attr('decimal')) %>>
         </div>
     </div>
 </script>
