@@ -6,6 +6,9 @@ colorpicker (Star trek) widget sets for ioBroker.vis
 ![Example](img/widgets.png)
 
 ## Changelog
+### 0.2.0 (2016-05-15)
+- (Pmant) add hue CIE picker
+
 ### 0.1.3 (2016-01-25)
 - (bluefox) add precision
 

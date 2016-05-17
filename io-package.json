@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "vis-colorpicker",
-        "version": "0.1.3",
+        "version": "0.2.0",
         "title":                    "ioBroker Visualisation - color picker style Widgets",
         "desc": {
             "en":                   "Color picker Widgets for ioBroker.vis",

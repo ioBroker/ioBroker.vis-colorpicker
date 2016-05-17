@@ -1,7 +1,7 @@
 <!--
     ioBroker.vis bars Widget-Set
 
-    version: "0.1.3"
+    version: "0.2.0"
 
     Copyright 2013-2016 hobbyquaker https://github.com/hobbyquaker, bluefox https://github.com/GermanBluefox
 -->
@@ -12,6 +12,8 @@
 
 <script type="text/javascript" src="widgets/colorpicker/js/farbtastic.js"></script>
 <script type="text/javascript" src="widgets/colorpicker/js/spectrum.js"></script>
+<script type="text/javascript" src="widgets/colorpicker/js/jscolorCIE.js"></script>
+<script type="text/javascript" src="widgets/colorpicker/js/huepiHelper.js"></script>
 
 <script type="text/javascript">
     
@@ -44,12 +46,21 @@
             "green-oid":    {"en": "Green ID",  "de": "Grün ID",    "ru": "Зелёный ID"},
             "blue-oid":     {"en": "Blue ID",   "de": "Blau ID",    "ru": "Синий ID"},
             "divisor":      {"en": "divisor",   "de": "Divisor",    "ru": "Делитель"},
-			"decimal": 		{"en": "Precision", "de": "Nach Komma", "ru": "Чисел посля запятой"}
+			"decimal": 		{"en": "Precision", "de": "Nach Komma", "ru": "Чисел посля запятой"},
+            "command-oid":  {"en": "Command ID","de": "Command ID", "ru": "Command ID"},
+            "xy-oid":       {"en": "XY ID",     "de": "XY ID",      "ru": "XY ID"},
+            "level-oid":    {"en": "Level ID",  "de": "Level ID",   "ru": "Level ID"},
+            "gamut":        {"en": "Gamut/Model",   "de": "Gamut/Model",    "ru": "Gamut/Model"},
+            "gamutZoom":    {"en": "Gamut Zoom",    "de": "Gamut Zoom",     "ru": "Gamut Zoom"},
+            "pickerWidth":  {"en": "Picker Width",  "de": "Farbwahl Breite","ru": "Picker Width"},
+            "pickerHeight": {"en": "Picker Height", "de": "Farbwahl Höhe",  "ru": "Picker Height"},
+            "buttonName":   {"en": "Button Text",   "de": "Buttontext",     "ru": "Button Text"},
+            "closeButton":  {"en": "Close button",  "de": "Schließen Button", "ru": "Close button"},
         });
     }
 
     vis.binds.colorpicker = {
-		version: "0.1.3",
+		version: "0.2.0",
 		showVersion: function () {
 			if (vis.binds.colorpicker.version) {
 				console.log('Version vis-colorpicker: ' + vis.binds.colorpicker.version);
@@ -186,9 +197,113 @@
                     }
                 }
             });
+        },
+        jscolorcie: function (el, cmd_id, xy_id, level_id, pickerWidth, pickerHeight, gamut, gamutZoom, buttonName, closeButton) {
+            cmd_id = cmd_id || 'nothing_selected';
+            xy_id = xy_id || 'nothing_selected';
+            level_id = level_id || 'nothing_selected';
+            pickerWidth = parseInt(pickerWidth) || 100;
+            pickerHeight = parseInt(pickerHeight) || 100;
+            gamut = typeof gamut === 'string' ? gamut : "default";
+            gamutZoom = Boolean.valueOf(gamutZoom);
+            buttonName = typeof buttonName === 'string' ? buttonName : "";
+            closeButton =  typeof closeButton === 'string' ? closeButton : ""
+
+            var $this = $(el);
+            $this.html(buttonName);
+
+            var onChange = function () {
+                if (cmd_id !== 'nothing_selected') {
+                    var cmd = '{"xy":"' + picker.xy[0] + ',' + picker.xy[1] + '",' + '"level":' + Math.round(picker.xy[2]*100) +'}';
+                    vis.setValue(cmd_id, cmd);
+                }
+            };
+            var picker = new jscolor($this[0], {
+                valueElement: false,
+                onFineChange: onChange,
+                mode: 'CIE',
+                gamut: gamut,
+                gamutZoom: gamutZoom,
+                width: pickerWidth,
+                height: pickerHeight,
+                closable: closeButton != "",
+                closeText: closeButton,
+                padding: 0,
+                shadow: false,
+                borderWidth: 0,
+                backgroundColor: 'transparent',
+                insetColor: '#000',
+            });
+
+            if (cmd_id !== 'nothing_selected' && xy_id !== 'nothing_selected' && level_id !== 'nothing_selected') {
+                var xy = (vis.states[xy_id + '.val'] || "0.5,0.5").split(',');
+                var level = vis.states[level_id + '.val'] || 0;
+                if (xy.length == 2) {
+                    picker.fromXY(parseFloat(xy[0]),parseFloat(xy[1]),parseInt(level)/100);
+                }
+
+                vis.states.bind(xy_id + '.val', function( e, newVal, oldVal ) {
+                    var xy = (vis.states[xy_id + '.val'] || "0.5,0.5").split(',');
+                    var level = vis.states[level_id + '.val'] || 0;
+                    if (xy.length == 2) {
+                        picker.fromXY(parseFloat(xy[0]),parseFloat(xy[1]),parseInt(level)/100);
+                    }
+                });
+
+                vis.states.bind(level_id + '.val', function( e, newVal, oldVal ) {
+                    var xy = (vis.states[xy_id + '.val'] || "0.5,0.5").split(',');
+                    var level = vis.states[level_id + '.val'] || 0;
+                    if (xy.length == 2) {
+                        picker.fromXY(parseFloat(xy[0]),parseFloat(xy[1]),parseInt(level)/100);
+                    }
+                });
+            }
+        },
+
+        changedHUE: function (widgetID, view, newId, fields) {
+            var cmd = vis.objects[newId];
+            var changed = [];
+            // If it is real object and state
+            if (cmd && cmd.common && cmd.type == 'state') {
+                var light = vis.objects[newId.split('.', 4).join('.')];
+                var xy = vis.objects[newId.split('.', 4).join('.')+'.xy'];
+                var level = vis.objects[newId.split('.', 4).join('.')+'.level'];
+
+                if (xy && xy.type === 'state' && !vis.views[view].widgets[widgetID].data["xy-oid"]) {
+                    changed.push('xy-oid');
+                    vis.views[view].widgets[widgetID].data["xy-oid"] = newId.split('.', 4).join('.')+'.xy';
+                    vis.widgets[widgetID].data["xy-oid"] = newId.split('.', 4).join('.')+'.xy';
+                }
+                if (level && level.type === 'state' && !vis.views[view].widgets[widgetID].data["level-oid"]) {
+                    changed.push('level-oid');
+                    vis.views[view].widgets[widgetID].data["level-oid"] = newId.split('.', 4).join('.')+'.level';
+                    vis.widgets[widgetID].data["level-oid"] = newId.split('.', 4).join('.')+'.level';
+                }
+                if (light.native.modelid !== undefined && !vis.views[view].widgets[widgetID].data.gamut) {
+                    changed.push('gamut');
+                    vis.views[view].widgets[widgetID].data.gamut = light.native.modelid;
+                    vis.widgets[widgetID].data.gamut = light.native.modelid;
+                }
+            }
+            return changed;
         }
     };
 	vis.binds.colorpicker.showVersion();
+</script>
+
+<script id="tplHUEjscolor"
+        type="text/ejs"
+        class="vis-tpl"
+        data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplRGBSpectrum.png"></img>'
+        data-vis-set="colorpicker"
+        data-vis-type="ctrl,color"
+        data-vis-name="Philips HUE"
+        data-vis-attrs="command-oid/id/changedHUE;xy-oid/id;level-oid/id;gamut[default];gamutZoom[true]/checkbox;pickerWidth[100]/number,0,500,1;pickerHeight[100]/number,0,500,1;buttonName[HUE];closeButton[close]">
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+        <div class="vis-widget-body" style="display:table;">
+            <div class="ui-button ui-state-default ui-corner-all" style="width:100%;height:100%;display:table-cell;" id="<%= this.data.attr('wid') %>_jscolorcie" value="" <%= (el) -> vis.binds.colorpicker.jscolorcie(el, data.attr('command-oid'), data.attr('xy-oid'), data.attr('level-oid'), data.attr('pickerWidth'), data.attr('pickerHeight'), data.attr('gamut'), data.attr('gamutZoom'), data.attr('buttonName'), data.attr('closeButton')) %> ></div>
+        </div>
+    </div>
 </script>
 
 <script id="tplRGBSpectrum"
@@ -201,7 +316,7 @@
         data-vis-attrs="red-oid/id;green-oid/id;blue-oid/id;divisor[255];decimal[0]/slider,0,5,1">
     <div class="vis-widget <%== this.data.attr('class') %>" style="" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
-            <input id="<%= this.data.attr('wid') %>_spectrum" value="" <%= (el) -> vis.binds.colorpicker.spectrum(el, data.attr('red-oid'), data.attr('green-oid'), data.attr('blue-oid'), data.attr('divisor'), data.attr('decimal')) %>>
+            <input id="<%= this.data.attr('wid') %>_spectrum" <%= (el) -> vis.binds.colorpicker.spectrum(el, data.attr('red-oid'), data.attr('green-oid'), data.attr('blue-oid'), data.attr('divisor'), data.attr('decimal')) %>>
         </div>
     </div>
 </script>
@@ -221,6 +336,8 @@
         </div>
     </div>
 </script>
+
+
 
         <!--
 
@@ -284,8 +401,4 @@
         <div class="vis-widget-body">
             <input id="<%= this.data.attr('wid') %>_spectrum" value="" <%= (el) -> vis.binds.colorpicker.spectrum(el) %>>
         </div>
-    </div>
-</script>
-
-
--->
+    </div
