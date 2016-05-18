@@ -248,7 +248,10 @@
             });
 
             if (cmd_id !== 'nothing_selected' && xy_id !== 'nothing_selected' && level_id !== 'nothing_selected') {
-                var xy = (vis.states[xy_id + '.val'] || "0.5,0.5").split(',');
+                var xy = (vis.states[xy_id + '.val'] || "0.5,0.5");
+                if (!Array.isArray(xy)){
+                    xy = xy.split(',');
+                }
                 var level = vis.states[level_id + '.val'] || 0;
                 if (xy.length == 2) {
                     picker.fromXY(parseFloat(xy[0]),parseFloat(xy[1]),parseInt(level)/100);
