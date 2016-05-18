@@ -291,21 +291,6 @@
 	vis.binds.colorpicker.showVersion();
 </script>
 
-<script id="tplHUEjscolor"
-        type="text/ejs"
-        class="vis-tpl"
-        data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplRGBSpectrum.png"></img>'
-        data-vis-set="colorpicker"
-        data-vis-type="ctrl,color"
-        data-vis-name="Philips HUE"
-        data-vis-attrs="command-oid/id/changedHUE;xy-oid/id;level-oid/id;gamut[default];pickerWidth[100]/number,0,500,1;pickerHeight[100]/number,0,500,1;pickerBackground/color;buttonName[HUE];closeButton[close]">
-    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
-        <div class="vis-widget-body" style="display:table;">
-            <div class="ui-button ui-state-default ui-corner-all" style="width:100%;height:100%;display:table-cell;" id="<%= this.data.attr('wid') %>_jscolorcie" value="" <%= (el) -> vis.binds.colorpicker.jscolorcie(el, data.attr('command-oid'), data.attr('xy-oid'), data.attr('level-oid'), data.attr('pickerWidth'), data.attr('pickerHeight'), data.attr('pickerBackground'), data.attr('gamut'), data.attr('buttonName'), data.attr('closeButton')) %> ></div>
-        </div>
-    </div>
-</script>
-
 <script id="tplRGBSpectrum"
         type="text/ejs"
         class="vis-tpl"
@@ -337,6 +322,20 @@
     </div>
 </script>
 
+<script id="tplHUEjscolor"
+        type="text/ejs"
+        class="vis-tpl"
+        data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplHUEjscolor.png"></img>'
+        data-vis-set="colorpicker"
+        data-vis-type="ctrl,color"
+        data-vis-name="Philips HUE"
+        data-vis-attrs="command-oid/id/changedHUE;xy-oid/id;level-oid/id;gamut[default];pickerWidth[100]/number,0,500,1;pickerHeight[100]/number,0,500,1;pickerBackground/color;buttonName[HUE];closeButton[close]">
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+        <div class="vis-widget-body" style="display:table;">
+            <div class="ui-button ui-state-default ui-corner-all" style="width:100%;height:100%;display:table-cell;" id="<%= this.data.attr('wid') %>_jscolorcie" value="" <%= (el) -> vis.binds.colorpicker.jscolorcie(el, data.attr('command-oid'), data.attr('xy-oid'), data.attr('level-oid'), data.attr('pickerWidth'), data.attr('pickerHeight'), data.attr('pickerBackground'), data.attr('gamut'), data.attr('buttonName'), data.attr('closeButton')) %> ></div>
+        </div>
+    </div>
+</script>
 
 
         <!--
