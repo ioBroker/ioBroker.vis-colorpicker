@@ -14,7 +14,7 @@
         "enabled":                  true,
         "mode":                     "once",
         "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.vis-colorpicker/master/admin/colorpicker.png",
-        "keywords":                 ["color picker", "star trek", "vis", "GUI", "graphical", "scada"],
+        "keywords":                 ["color picker", "vis", "GUI", "graphical", "scada"],
         "readme":                   "https://github.com/ioBroker/ioBroker.vis-colorpicker/blob/master/README.md",
         "authors": [
 			"bluefox <dogafox@gmail.com>",
@@ -27,6 +27,7 @@
         "onlyWWW":                  true,
         "singleton":                true,
         "type":                     "vis",
+		"noConfig":                 true,
 		"restartAdapters":          ["vis"]
     },
     "native": {
