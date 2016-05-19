@@ -1,14 +1,15 @@
 {
   "name": "iobroker.vis-colorpicker",
   "description": "colorpicker Widgets for ioBroker.vis",
-  "version": "0.1.3",
+  "version": "1.0.0",
   "author": {
-    "name": "hobbyquaker",
-    "email": "hq@ccu.io"
+    "name": "bluefox",
+    "email": "dogaofx@gmail.com"
   },
   "contributors": [
-    "bluefox <bluefox@ccu.io>",
-    "hobbyquaker <hq@ccu.io>"
+    "bluefox <dogaofx@gmail.com>",
+    "hobbyquaker <hq@ccu.io>",
+    "pmant <patrickmo@gmx.de>"
   ],
   "homepage": "https://github.com/ioBroker/ioBroker.vis-colorpicker",
   "repository": {
