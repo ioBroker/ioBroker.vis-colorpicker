@@ -1,7 +1,12 @@
 {
     "common": {
         "name":                     "vis-colorpicker",
-        "version": "1.0.0",
+        "version": "1.0.1",
+		"news": {
+			"en": "(bluefox) Fix Philips HUE Colorpicker",
+			"de": "(bluefox) Fix Philips HUE Colorpicker",
+			"ru": "(bluefox) Fix Philips HUE Colorpicker",
+		}
         "title":                    "ioBroker Visualisation - color picker style Widgets",
         "desc": {
             "en":                   "Color picker Widgets for ioBroker.vis",

@@ -76,7 +76,7 @@
     }
 
     vis.binds.colorpicker = {
-		version: "1.0.0",
+		version: "1.0.1",
 		showVersion: function () {
 			if (vis.binds.colorpicker.version) {
 				console.log('Version vis-colorpicker: ' + vis.binds.colorpicker.version);
@@ -427,9 +427,9 @@
                 insetColor:      '#000'
             });
 
-            if (data['command-oid'] && data['command-oid']  !== 'nothing_selected' &&
-                data['xy-oid']      && data['xy-oid']       !== 'nothing_selected' &&
-                data['level-oid']   && data['level-oid']    !== 'nothing_selected') {
+            if (data['command-oid']  && data['command-oid'] !== 'nothing_selected' &&
+                data['xy-oid']       && data['xy-oid']      !== 'nothing_selected' &&
+                data['level-oid']    && data['level-oid']   !== 'nothing_selected') {
                 var cmd_id   = data['command-oid'];
                 var xy_id    = data['xy-oid'];
                 var level_id = data['level-oid'];
@@ -441,30 +441,21 @@
                     }
                 });
 
-                var xy = (vis.states[xy_id + '.val'] || '0.5,0.5');
-                if (typeof xy === 'string'){
-                    var level = vis.states[level_id + '.val'] || 0;
-                    xy        = xy.split(',');
-                    if (xy.length == 2) {
-                        picker.fromXY(parseFloat(xy[0]), parseFloat(xy[1]), parseInt(level) / 100);
-                    }
-                }
+                var onChange = function () {
+                    var xy = vis.states[xy_id + '.val'] || '0.5,0.5';
+                    if (typeof xy !== 'string') xy = '0.5,0.5';
 
-                vis.states.bind(xy_id + '.val', function ( ) {
-                    var xy    = (vis.states[xy_id + '.val'] || '0.5,0.5').split(',');
                     var level = vis.states[level_id + '.val'] || 0;
-                    if (xy.length == 2) {
+                    xy = xy.split(',');
+                    if (xy.length === 2) {
                         picker.fromXY(parseFloat(xy[0]), parseFloat(xy[1]), parseInt(level) / 100);
                     }
-                });
+                };
 
-                vis.states.bind(level_id + '.val', function (e, newVal, oldVal) {
-                    var xy    = (vis.states[xy_id + '.val'] || '0.5,0.5').split(',');
-                    var level = vis.states[level_id + '.val'] || 0;
-                    if (xy.length == 2) {
-                        picker.fromXY(parseFloat(xy[0]), parseFloat(xy[1]), parseInt(level) / 100);
-                    }
-                });
+
+                vis.states.bind(xy_id    + '.val', onChange);
+                vis.states.bind(level_id + '.val', onChange);
+                onChange();
             }
             if (data['hue-oid'] && data['hue-oid'] !== 'nothing_selected' &&
                     data['sat-oid'] && data['sat-oid'] !== 'nothing_selected' &&
@@ -545,11 +536,13 @@
 
                 _rgbChanged();
             }
-        },
-
-        changedHUE: function (widgetID, view, newId, fields) {
+        }
+    };
+    if (vis.editMode) {
+        vis.binds.colorpicker.changedHUE = function (widgetID, view, newId, fields) {
             var cmd     = vis.objects[newId];
             var changed = [];
+
             // If it is real object and state
             if (cmd && cmd.common && cmd.type == 'state') {
                 var light   = vis.objects[newId.split('.', 4).join('.')];
@@ -573,8 +566,9 @@
                 }
             }
             return changed;
-        }
-    };
+        };
+    }
+
 	vis.binds.colorpicker.showVersion();
 </script>
 
@@ -596,7 +590,6 @@
         </div>
     </div>
 </script>
-
 
 <script id="tplRGBFarbtastic"
         class="vis-tpl" 
