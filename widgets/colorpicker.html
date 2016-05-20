@@ -427,12 +427,12 @@
                 insetColor:      '#000'
             });
 
-            if (data.cmd_id   && data.cmd_id   !== 'nothing_selected' &&
-                data.xy_id    && data.xy_id    !== 'nothing_selected' &&
-                data.level_id && data.level_id !== 'nothing_selected') {
-                var cmd_id   = data.cmd_id;
-                var xy_id    = data.xy_id;
-                var level_id = data.level_id;
+            if (data['command-oid'] && data['command-oid']  !== 'nothing_selected' &&
+                data['xy-oid']      && data['xy-oid']       !== 'nothing_selected' &&
+                data['level-oid']   && data['level-oid']    !== 'nothing_selected') {
+                var cmd_id   = data['command-oid'];
+                var xy_id    = data['xy-oid'];
+                var level_id = data['level-oid'];
 
                 handler.push(function () {
                     if (cmd_id !== 'nothing_selected') {
@@ -625,7 +625,7 @@
         data-vis-set="colorpicker"
         data-vis-type="ctrl,color"
         data-vis-name="Philips HUE"
-        data-vis-attrs="command-oid/id/changedHUE;xy-oid/id;level-oid/id;gamut;transitionTime[4]/number,0,30000,1;pickerWidth[100]/number,0,500,1;pickerHeight[100]/number,0,500,1;pickerBackground/color;buttonName[HUE];closeButton[close];"
+        data-vis-attrs="command-oid/id/changedHUE;xy-oid/id;level-oid/id;gamut;transitionTime[4]/number,0,30000,1;pickerWidth[100]/number,0,500,1;pickerHeight[100]/number,0,500,1;pickerBackground/color;buttonName[HUE]/html;closeButton[close];"
         data-vis-attrs0="group.rgb;red-oid/id;green-oid/id;blue-oid/id;divisor[1];decimal[0]/slider,0,5,1;rgb-oid/id;"
         data-vis-attrs1="group.hue;hue-oid/id;sat-oid/id;bri-oid/id;"
         >
