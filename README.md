@@ -12,7 +12,7 @@ Color selector widgets for ioBroker.vis
 ![Example](img/widgets.png)
 
 ## Changelog
-### 1.0.1 (2016-05-20)
+### 1.0.2 (2016-05-20)
 (bluefox) Fix Philips HUE Colorpicker
 
 ### 1.0.0 (2016-05-19)
