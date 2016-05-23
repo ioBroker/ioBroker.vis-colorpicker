@@ -2,10 +2,10 @@
 ioBroker.vis-colorpicker
 ============
 
-[![NPM version](http://img.shields.io/npm/v/iobroker.colorpicker.svg)](https://www.npmjs.com/package/iobroker.colorpicker)
-[![Downloads](https://img.shields.io/npm/dm/iobroker.colorpicker.svg)](https://www.npmjs.com/package/iobroker.colorpicker)
+[![NPM version](http://img.shields.io/npm/v/iobroker.vis-colorpicker.svg)](https://www.npmjs.com/package/iobroker.vis-colorpicker)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.vis-colorpicker.svg)](https://www.npmjs.com/package/iobroker.vis-colorpicker)
 
-[![NPM](https://nodei.co/npm/iobroker.colorpicker.png?downloads=true)](https://nodei.co/npm/iobroker.colorpicker/)
+[![NPM](https://nodei.co/npm/iobroker.vis-colorpicker.png?downloads=true)](https://nodei.co/npm/iobroker.vis-colorpicker/)
 
 Color selector widgets for ioBroker.vis
 
