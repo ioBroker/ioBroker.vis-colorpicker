@@ -2,10 +2,22 @@
 ioBroker.vis-colorpicker
 ============
 
-colorpicker (Star trek) widget sets for ioBroker.vis
+[![NPM version](http://img.shields.io/npm/v/iobroker.vis-colorpicker.svg)](https://www.npmjs.com/package/iobroker.vis-colorpicker)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.vis-colorpicker.svg)](https://www.npmjs.com/package/iobroker.vis-colorpicker)
+
+[![NPM](https://nodei.co/npm/iobroker.vis-colorpicker.png?downloads=true)](https://nodei.co/npm/iobroker.vis-colorpicker/)
+
+Color selector widgets for ioBroker.vis
+
 ![Example](img/widgets.png)
 
 ## Changelog
+### 1.0.2 (2016-05-20)
+(bluefox) Fix Philips HUE Colorpicker
+
+### 1.0.0 (2016-05-19)
+- (bluefox) rewrite all widgets
+
 ### 0.2.0 (2016-05-15)
 - (Pmant) add hue CIE picker
 
@@ -22,5 +34,5 @@ colorpicker (Star trek) widget sets for ioBroker.vis
 - (bluefox) initial checkin
 
 ## License
- Copyright (c) 2013-2015 hobbyquaker https://github.com/hobbyquaker, bluefox https://github.com/GermanBluefox
+ Copyright (c) 2013-2016  bluefox https://github.com/GermanBluefox, hobbyquaker https://github.com/hobbyquaker
  MIT

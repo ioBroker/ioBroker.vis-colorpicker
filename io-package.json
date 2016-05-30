@@ -1,7 +1,12 @@
 {
     "common": {
         "name":                     "vis-colorpicker",
-        "version": "0.2.0",
+        "version": "1.0.2",
+		"news": {
+			"en": "(bluefox) Fix Philips HUE Colorpicker",
+			"de": "(bluefox) Fix Philips HUE Colorpicker",
+			"ru": "(bluefox) Fix Philips HUE Colorpicker"
+		},
         "title":                    "ioBroker Visualisation - color picker style Widgets",
         "desc": {
             "en":                   "Color picker Widgets for ioBroker.vis",
@@ -14,11 +19,12 @@
         "enabled":                  true,
         "mode":                     "once",
         "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.vis-colorpicker/master/admin/colorpicker.png",
-        "keywords":                 ["color picker", "star trek", "vis", "GUI", "graphical", "scada"],
+        "keywords":                 ["color picker", "vis", "GUI", "graphical", "scada"],
         "readme":                   "https://github.com/ioBroker/ioBroker.vis-colorpicker/blob/master/README.md",
         "authors": [
+			"bluefox <dogafox@gmail.com>",
             "hobbyquaker <hq@ccu.io>",
-			"bluefox <dogafox@gmail.com>"
+			"pmant <patrickmo@gmx.de>"
         ],
         "localLink":                "%web_protocol%://%ip%:%web_port%/vis/edit.html",
         "license":                  "MIT",
@@ -26,6 +32,7 @@
         "onlyWWW":                  true,
         "singleton":                true,
         "type":                     "vis",
+		"noConfig":                 true,
 		"restartAdapters":          ["vis"]
     },
     "native": {

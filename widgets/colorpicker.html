@@ -6,13 +6,12 @@
     Copyright 2013-2016 hobbyquaker https://github.com/hobbyquaker, bluefox https://github.com/GermanBluefox
 -->
 
-<!--<script type="text/javascript" src="widgets/colorpicker/js/jscolor.js"></script>-->
 <link rel="stylesheet" type="text/css" href="widgets/colorpicker/css/farbtastic.css" />
 <link rel="stylesheet" type="text/css" href="widgets/colorpicker/css/spectrum.css" />
 
+<script type="text/javascript" src="widgets/colorpicker/js/jscolor.js"></script>
 <script type="text/javascript" src="widgets/colorpicker/js/farbtastic.js"></script>
 <script type="text/javascript" src="widgets/colorpicker/js/spectrum.js"></script>
-<script type="text/javascript" src="widgets/colorpicker/js/jscolorCIE.js"></script>
 <script type="text/javascript" src="widgets/colorpicker/js/huepiHelper.js"></script>
 
 <script type="text/javascript">
@@ -67,21 +66,125 @@
             "pickerHeight":         {"en": "Picker Height",     "de": "Farbwahl Höhe",      "ru": "Picker Height"},
             "buttonName":           {"en": "Button Text",       "de": "Buttontext",         "ru": "Button Text"},
             "closeButton":          {"en": "Close button",      "de": "Schließen Button",   "ru": "Close button"},
+            "group_rgb":            {"en": "R.G.B.",            "de": "R.G.B.",             "ru": "R.G.B."},
+            "rgb-oid":              {"en": "RGB ID",            "de": "RGB ID",             "ru": "RGB ID"},
+            "group_hue":            {"en": "H.S.L.",            "de": "H.S.L.",             "ru": "H.S.L."},
+            "hue-oid":              {"en": "HUE ID",            "de": "HUE ID",             "ru": "HUE ID"},
+            "sat-oid":              {"en": "Saturation ID",     "de": "Sättigung ID",       "ru": "ID Насыщенность"},
+            "bri-oid":              {"en": "Brightness ID",     "de": "Helligkeit ID",      "ru": "ID Яркость"}
         });
     }
 
     vis.binds.colorpicker = {
-		version: "0.2.0",
+		version: "1.0.1",
 		showVersion: function () {
 			if (vis.binds.colorpicker.version) {
 				console.log('Version vis-colorpicker: ' + vis.binds.colorpicker.version);
 				vis.binds.colorpicker.version = null;
 			}
 		},
-        /*jscolor: function (el) {
-            var myPicker = new jscolor.color(document.getElementById(jQuery(el).parent().attr('id')+"_jscolor"), {})
+        jscolor: function (el, data) {
+            data = data._data || data;
+            var $this = $(el);
+            var handler = [];
+            var factor  = parseFloat(data.factor) || 1;
+            var decimal = parseInt(data.decimal || 0, 10) || 0;
 
-        },*/
+            var picker = new jscolor($this[0], {
+                valueElement:   data.showValue || false,
+                onFineChange:   function () {
+                    for (var h = 0; h < handler.length; h++) {
+                        handler[h]();
+                    }
+                },
+                closable:       !!data.closeText,
+                closeText:      data.closeText
+            });
+
+            $this.click(function () {
+                picker.show();
+            });
+
+            if (data['hue-oid'] && data['hue-oid'] !== 'nothing_selected' &&
+                data['sat-oid'] && data['sat-oid'] !== 'nothing_selected' &&
+                data['bri-oid'] && data['bri-oid'] !== 'nothing_selected') {
+                var hue = data['hue-oid'];
+                var sat = data['sat-oid'];
+                var bri = data['bri-oid'];
+
+                handler.push(function () {
+                    vis.setValue(hue, parseFloat(picker.hsv[0]).toFixed(decimal));
+                    vis.setValue(sat, parseFloat((picker.hsv[1] / factor).toFixed(decimal)));
+                    vis.setValue(bri, parseFloat((picker.hsv[2] / factor).toFixed(decimal)));
+                });
+
+                var htimer = null;
+                var hueChanged = function () {
+                    if (htimer) clearTimeout(htimer);
+                    htimer = setTimeout(function () {
+                        htimer = null;
+                        picker.fromHSV(
+                                Math.round(parseFloat(vis.states[hue + '.val'] || 0)),
+                                Math.round(parseFloat(vis.states[sat + '.val'] || 0) * factor),
+                                Math.round(parseFloat(vis.states[bri + '.val'] || 0) * factor)
+                        );
+                    }, 10);
+                };
+
+                vis.states.bind(hue + '.val', hueChanged);
+                vis.states.bind(sat + '.val', hueChanged);
+                vis.states.bind(bri + '.val', hueChanged);
+
+                hueChanged();
+            }
+            if (data['red-oid'] && data['red-oid']  !== 'nothing_selected' &&
+                    data['green-oid'] && data['green-oid'] !== 'nothing_selected' &&
+                    data['blue-oid']  && data['blue-oid']  !== 'nothing_selected') {
+                var r = data['red-oid'];
+                var g = data['green-oid'];
+                var b = data['blue-oid'];
+
+                handler.push(function () {
+                    vis.setValue(r, parseFloat((picker.rgb[0] / factor).toFixed(decimal)));
+                    vis.setValue(g, parseFloat((picker.rgb[1] / factor).toFixed(decimal)));
+                    vis.setValue(b, parseFloat((picker.rgb[2] / factor).toFixed(decimal)));
+                });
+
+                var timer = null;
+                var rgbChanged = function () {
+                    if (timer) clearTimeout(timer);
+                    timer = setTimeout(function () {
+                        timer = null;
+                        picker.fromRGB(
+                                Math.round(parseFloat(vis.states[r + '.val'] || 0) * factor),
+                                Math.round(parseFloat(vis.states[g + '.val'] || 0) * factor),
+                                Math.round(parseFloat(vis.states[b + '.val'] || 0) * factor)
+                        );
+                    }, 10);
+                };
+
+                vis.states.bind(r + '.val', rgbChanged);
+                vis.states.bind(g + '.val', rgbChanged);
+                vis.states.bind(b + '.val', rgbChanged);
+
+                rgbChanged();
+            }
+            if (data['rgb-oid'] && data['rgb-oid'] !== 'nothing_selected') {
+                var rgb = data['rgb-oid'];
+
+                handler.push(function () {
+                    vis.setValue(rgb, picker.toHEXString());
+                });
+
+                var _rgbChanged = function () {
+                    picker.fromString(vis.states[rgb + '.val'] || '');
+                };
+
+                vis.states.bind(rgb + '.val', _rgbChanged);
+
+                _rgbChanged();
+            }
+        },
         rgb2hex: function (r,g,b) {
             return '#' + ('0' + r.toString(16)).slice(-2) + ('0' + g.toString(16)).slice(-2) + ('0' + b.toString(16)).slice(-2);
         },
@@ -91,208 +194,370 @@
             var b = parseInt(hex.substr(5, 2), 16);
             return {r: r, g: g, b: b};
         },
-        farbtastic: function (el, r_id, g_id, b_id, factor, decimal) {
+        farbtastic: function (el, data) {
             var $this = $(el);
             $this.hide();
 
-            r_id = r_id || 'nothing_selected';
-            g_id = g_id || 'nothing_selected';
-            b_id = b_id || 'nothing_selected';
-			decimal = parseInt(decimal || 0, 10) || 0;
-			factor  = parseFloat(factor) || 255;
+            data = data._data || data;
+            var handler = [];
+            var factor  = parseFloat(data.factor) || 1;
+            var decimal = parseInt(data.decimal || 0, 10) || 0;
 
             var ft = $.farbtastic($this.prev(), function () {
-                var color = vis.binds.colorpicker.hex2rgb(this.color);
-                var r = (parseFloat(color.r) / factor).toFixed(decimal);
-                var g = (parseFloat(color.g) / factor).toFixed(decimal);
-                var b = (parseFloat(color.b) / factor).toFixed(decimal);
-                if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
-                    if (r_id && r_id !== 'nothing_selected') {
-                        vis.states[r_id + '.val'] = r;
-                        vis.setValue(r_id, r);
-                    }
-                    if (g_id && g_id !== 'nothing_selected'){
-                        vis.states[g_id + '.val'] = g;
-                        vis.setValue(g_id, g);
-                    }
-                    if (b_id && b_id !== 'nothing_selected') {
-                        vis.states[b_id + '.val'] = b;
-                        vis.setValue(b_id, b);
-                    }
+                for (var h = 0; h < handler.length; h++) {
+                    handler[h](this.color);
                 }
             });
 
-            var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
-            var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
-            var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
-            ft.setColor(vis.binds.colorpicker.rgb2hex(r, g, b));
+            if (data['hue-oid'] && data['hue-oid'] !== 'nothing_selected' &&
+                data['sat-oid'] && data['sat-oid'] !== 'nothing_selected' &&
+                data['bri-oid'] && data['bri-oid'] !== 'nothing_selected') {
+                var hue = data['hue-oid'];
+                var sat = data['sat-oid'];
+                var bri = data['bri-oid'];
 
- 			if (r_id !== 'nothing_selected') {
-				vis.states.bind(r_id + '.val', function(e, newVal, oldVal) {
-					var r = Math.round(parseFloat(newVal) * factor);
-					var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
-					var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
-					ft.setColor(vis.binds.colorpicker.rgb2hex(r, g, b));
-				});
-			}
- 			if (g_id !== 'nothing_selected') {
-			    vis.states.bind(g_id + '.val', function(e, newVal, oldVal) {
-					var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
-					var g = Math.round(parseFloat(newVal) * factor);
-					var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
-					ft.setColor(vis.binds.colorpicker.rgb2hex(r, g, b));
-				});
-			}
-			if (b_id !== 'nothing_selected') {
-				vis.states.bind(b_id + '.val', function( e, newVal, oldVal ) {
-					var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
-					var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
-					var b = Math.round(parseFloat(newVal) * factor);
-					ft.setColor(vis.binds.colorpicker.rgb2hex(r, g, b));
-				});
-			}
-        },
-        spectrum: function (el, r_id, g_id, b_id, factor, decimal) {
-            r_id = r_id || 'nothing_selected';
-            g_id = g_id || 'nothing_selected';
-            b_id = b_id || 'nothing_selected';
-			factor  = parseFloat(factor) || 255;
-			decimal = parseInt(decimal || 0, 10) || 0;
-			
-            var $this = $(el);
-
-            $this.spectrum({
-                preferredFormat: "rgb"
-            });
-
-            var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
-            var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
-            var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
-            $this.spectrum("set", {r: r, g: g, b: b});
-
-            vis.states.bind(r_id + '.val', function( e, newVal, oldVal ) {
-                var r = Math.round(parseFloat(newVal) * factor, 10);
-                var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
-                var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
-                $this.spectrum('set', {r: r, g: g, b: b});
-            });
-            vis.states.bind(g_id + '.val', function( e, newVal, oldVal ) {
-                var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
-                var g = Math.round(parseFloat(newVal) * factor, 10);
-                var b = Math.round(parseFloat(vis.states[b_id + '.val'] || 0) * factor);
-                $this.spectrum('set', {r:r, g:g, b:b});
-            });
-            vis.states.bind(b_id + '.val', function( e, newVal, oldVal ) {
-                var r = Math.round(parseFloat(vis.states[r_id + '.val'] || 0) * factor);
-                var g = Math.round(parseFloat(vis.states[g_id + '.val'] || 0) * factor);
-                var b = Math.round(parseFloat(newVal) * factor, 10);
-                $this.spectrum('set', {r: r, g: g, b: b});
-            });
-            $this.change(function() {
-                var color = $this.spectrum('get').toRgb();
-                var r = (parseFloat(color.r) / factor).toFixed(decimal);
-                var g = (parseFloat(color.g) / factor).toFixed(decimal);
-                var b = (parseFloat(color.b) / factor).toFixed(decimal);
-                if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
-                    if (r_id !== 'nothing_selected') {
-                        vis.states[r_id + '.val'] = r;
-                        vis.setValue(r_id, r);
-                    }
-                    if (g_id !== 'nothing_selected') {
-                        vis.states[g_id + '.val'] = g;
-                        vis.setValue(g_id, g);
-                    }
-                    if (b_id !== 'nothing_selected') {
-                        vis.states[b_id + '.val'] = b;
-                        vis.setValue(b_id, b);
-                    }
-                }
-            });
-        },
-        jscolorcie: function (el, cmd_id, xy_id, level_id, pickerWidth, pickerHeight, pickerBackground, gamut, transitionTime, buttonName, closeButton) {
-            cmd_id = cmd_id || 'nothing_selected';
-            xy_id = xy_id || 'nothing_selected';
-            level_id = level_id || 'nothing_selected';
-            pickerWidth = parseInt(pickerWidth) || 100;
-            pickerHeight = parseInt(pickerHeight) || 100;
-            gamut = typeof gamut === 'string' ? gamut : "default";
-            gamutZoom = true;
-            transitionTime = parseInt(transitionTime) || 0;
-            buttonName = typeof buttonName === 'string' ? buttonName : "";
-            closeButton =  typeof closeButton === 'string' ? closeButton : ""
-
-            var $this = $(el);
-            $this.html(buttonName);
-
-            var onChange = function () {
-                if (cmd_id !== 'nothing_selected') {
-                    var cmd = '{"transitiontime":' + transitionTime + ',"xy":"' + picker.xy[0] + ',' + picker.xy[1] + '",' + '"level":' + Math.round(picker.xy[2]*100) +'}';
-                    vis.setValue(cmd_id, cmd);
-                }
-            };
-            var picker = new jscolor($this[0], {
-                valueElement: false,
-                onFineChange: onChange,
-                mode: 'CIE',
-                gamut: gamut,
-                gamutZoom: gamutZoom,
-                width: pickerWidth,
-                height: pickerHeight,
-                closable: closeButton != "",
-                closeText: closeButton,
-                padding: 0,
-                shadow: false,
-                borderWidth: 0,
-                backgroundColor: pickerBackground,
-                insetColor: '#000',
-            });
-
-            if (cmd_id !== 'nothing_selected' && xy_id !== 'nothing_selected' && level_id !== 'nothing_selected') {
-                var xy = (vis.states[xy_id + '.val'] || "0.5,0.5");
-                if (typeof xy === 'string'){
-                    xy = xy.split(',');
-                    var level = vis.states[level_id + '.val'] || 0;
-                    if (xy.length == 2) {
-                        picker.fromXY(parseFloat(xy[0]),parseFloat(xy[1]),parseInt(level)/100);
-                    }
-                }
-
-                vis.states.bind(xy_id + '.val', function( e, newVal, oldVal ) {
-                    var xy = (vis.states[xy_id + '.val'] || "0.5,0.5").split(',');
-                    var level = vis.states[level_id + '.val'] || 0;
-                    if (xy.length == 2) {
-                        picker.fromXY(parseFloat(xy[0]),parseFloat(xy[1]),parseInt(level)/100);
-                    }
+                handler.push(function (hex) {
+                    var color = vis.binds.colorpicker.hex2rgb(hex);
+                    vis.setValue(hue, parseFloat(picker.hsv[0]).toFixed(decimal));
+                    vis.setValue(sat, parseFloat((picker.hsv[1] / factor).toFixed(decimal)));
+                    vis.setValue(bri, parseFloat((picker.hsv[2] / factor).toFixed(decimal)));
                 });
 
-                vis.states.bind(level_id + '.val', function( e, newVal, oldVal ) {
-                    var xy = (vis.states[xy_id + '.val'] || "0.5,0.5").split(',');
-                    var level = vis.states[level_id + '.val'] || 0;
-                    if (xy.length == 2) {
-                        picker.fromXY(parseFloat(xy[0]),parseFloat(xy[1]),parseInt(level)/100);
-                    }
+                var htimer = null;
+                var hueChanged = function () {
+                    if (htimer) clearTimeout(htimer);
+                    htimer = setTimeout(function () {
+                        htimer = null;
+                        ft.setColor(vis.binds.colorpicker.rgb2hex(
+                                Math.round(parseFloat(vis.states[hue + '.val'] || 0)),
+                                Math.round(parseFloat(vis.states[sat + '.val'] || 0) * factor),
+                                Math.round(parseFloat(vis.states[bri + '.val'] || 0) * factor)
+                        ));
+                    }, 10);
+                };
+
+                vis.states.bind(hue + '.val', hueChanged);
+                vis.states.bind(sat + '.val', hueChanged);
+                vis.states.bind(bri + '.val', hueChanged);
+
+                hueChanged();
+            }
+            if (data['red-oid'] && data['red-oid']  !== 'nothing_selected' &&
+                data['green-oid'] && data['green-oid'] !== 'nothing_selected' &&
+                data['blue-oid']  && data['blue-oid']  !== 'nothing_selected') {
+                var r = data['red-oid'];
+                var g = data['green-oid'];
+                var b = data['blue-oid'];
+
+                handler.push(function (hex) {
+                    var color = vis.binds.colorpicker.hex2rgb(hex);
+                    vis.setValue(r, parseFloat((color.r / factor).toFixed(decimal)));
+                    vis.setValue(g, parseFloat((color.g / factor).toFixed(decimal)));
+                    vis.setValue(b, parseFloat((color.b / factor).toFixed(decimal)));
                 });
+
+                var timer = null;
+                var rgbChanged = function () {
+                    if (timer) clearTimeout(timer);
+                    timer = setTimeout(function () {
+                        timer = null;
+                        ft.setColor(vis.binds.colorpicker.rgb2hex(
+                                Math.round(parseFloat(vis.states[r + '.val'] || 0) * factor),
+                                Math.round(parseFloat(vis.states[g + '.val'] || 0) * factor),
+                                Math.round(parseFloat(vis.states[b + '.val'] || 0) * factor)
+                        ));
+                    }, 10);
+                };
+
+                vis.states.bind(r + '.val', rgbChanged);
+                vis.states.bind(g + '.val', rgbChanged);
+                vis.states.bind(b + '.val', rgbChanged);
+
+                rgbChanged();
+            }
+            if (data['rgb-oid'] && data['rgb-oid'] !== 'nothing_selected') {
+                var rgb = data['rgb-oid'];
+
+                handler.push(function (hex) {
+                    vis.setValue(rgb, hex);
+                });
+
+                var _rgbChanged = function () {
+                    ft.setColor(vis.states[rgb + '.val'] || '');
+                };
+
+                vis.states.bind(rgb + '.val', _rgbChanged);
+
+                _rgbChanged();
             }
         },
+        spectrum: function (el, data) {
+            data = data._data || data;
+            var $this = $(el);
+            var handler = [];
+            var factor  = parseFloat(data.factor) || 1;
+            var decimal = parseInt(data.decimal || 0, 10) || 0;
 
-        changedHUE: function (widgetID, view, newId, fields) {
-            var cmd = vis.objects[newId];
+            $this.spectrum({
+                preferredFormat: 'rgb'
+            });
+
+            $this.change(function() {
+                for (var h = 0; h < handler.length; h++) {
+                    handler[h]();
+                }
+            });
+            if (data['hue-oid'] && data['hue-oid'] !== 'nothing_selected' &&
+                data['sat-oid'] && data['sat-oid'] !== 'nothing_selected' &&
+                data['bri-oid'] && data['bri-oid'] !== 'nothing_selected') {
+                var hue = data['hue-oid'];
+                var sat = data['sat-oid'];
+                var bri = data['bri-oid'];
+
+
+                handler.push(function () {
+                    var hsl = $this.spectrum('get').toHsl();
+                    vis.setValue(hue, parseFloat((hsl.h).toFixed(decimal)));
+                    vis.setValue(sat, parseFloat((hsl.s * factor).toFixed(decimal)));
+                    vis.setValue(bri, parseFloat((hsl.l * factor).toFixed(decimal)));
+                });
+
+                var htimer = null;
+                var hueChanged = function () {
+                    if (htimer) clearTimeout(htimer);
+                    htimer = setTimeout(function () {
+                        htimer = null;
+                        $this.spectrum('set', {
+                            h: Math.round(parseFloat(vis.states[hue + '.val'] || 0)),
+                            s: Math.round(parseFloat(vis.states[sat + '.val'] || 0) / factor),
+                            l: Math.round(parseFloat(vis.states[bri + '.val'] || 0) / factor)
+                        });
+                    }, 10);
+                };
+
+                vis.states.bind(hue + '.val', hueChanged);
+                vis.states.bind(sat + '.val', hueChanged);
+                vis.states.bind(bri + '.val', hueChanged);
+
+                hueChanged();
+            }
+            if (data['red-oid']   && data['red-oid']   !== 'nothing_selected' &&
+                data['green-oid'] && data['green-oid'] !== 'nothing_selected' &&
+                data['blue-oid']  && data['blue-oid']  !== 'nothing_selected') {
+                var r = data['red-oid'];
+                var g = data['green-oid'];
+                var b = data['blue-oid'];
+
+                handler.push(function () {
+                    var color = $this.spectrum('get').toRgb();
+                    vis.setValue(r, parseFloat((color.r / factor).toFixed(decimal)));
+                    vis.setValue(g, parseFloat((color.g / factor).toFixed(decimal)));
+                    vis.setValue(b, parseFloat((color.b / factor).toFixed(decimal)));
+                });
+
+                var timer = null;
+                var rgbChanged = function () {
+                    if (timer) clearTimeout(timer);
+                    timer = setTimeout(function () {
+                        timer = null;
+                        $this.spectrum('set', {
+                            r: Math.round(parseFloat(vis.states[r + '.val'] || 0) * factor),
+                            g: Math.round(parseFloat(vis.states[g + '.val'] || 0) * factor),
+                            b: Math.round(parseFloat(vis.states[b + '.val'] || 0) * factor)
+                        });
+                    }, 10);
+                };
+
+                vis.states.bind(r + '.val', rgbChanged);
+                vis.states.bind(g + '.val', rgbChanged);
+                vis.states.bind(b + '.val', rgbChanged);
+
+                rgbChanged();
+            }
+            if (data['rgb-oid'] && data['rgb-oid'] !== 'nothing_selected') {
+                var rgb = data['rgb-oid'];
+
+                handler.push(function () {
+                    vis.setValue(rgb, $this.spectrum('get').toHexString());
+                });
+
+                var _rgbChanged = function () {
+                    $this.spectrum('set', vis.states[rgb + '.val'] || '');
+                };
+
+                vis.states.bind(rgb + '.val', _rgbChanged);
+
+                _rgbChanged();
+            }
+        },
+        jscolorcie: function (el, data) {
+            data = data._data ? JSON.parse(JSON.stringify(data._data)) : data;
+            data.pickerWidth     = parseInt(data.pickerWidth)  || 100;
+            data.pickerHeight    = parseInt(data.pickerHeight) || 100;
+            data.gamut           = typeof data.gamut === 'string' ? data.gamut : 'default';
+            var gamutZoom   = true;
+            data.transitionTime  = parseInt(data.transitionTime) || 0;
+            data.buttonName      = typeof data.buttonName  === 'string' ? data.buttonName  : '';
+            data.closeButton     = typeof data.closeButton === 'string' ? data.closeButton : '';
+            var factor  = parseFloat(data.factor) || 1;
+            var decimal = parseInt(data.decimal || 0, 10) || 0;
+
+            var $this = $(el);
+            $this.html(data.buttonName);
+            var handler = [];
+
+            var picker = new jscolor($this[0], {
+                valueElement:   false,
+                onFineChange:   function () {
+                    for (var h = 0; h < handler.length; h++) {
+                        handler[h]();
+                    }
+                },
+                mode:            'CIE',
+                gamut:           data.gamut,
+                gamutZoom:       gamutZoom,
+                width:           data.pickerWidth,
+                height:          data.pickerHeight,
+                closable:        !!data.closeButton,
+                closeText:       data.closeButton,
+                padding:         0,
+                shadow:          false,
+                borderWidth:     0,
+                backgroundColor: data.pickerBackground,
+                insetColor:      '#000'
+            });
+
+            if (data['command-oid']  && data['command-oid'] !== 'nothing_selected' &&
+                data['xy-oid']       && data['xy-oid']      !== 'nothing_selected' &&
+                data['level-oid']    && data['level-oid']   !== 'nothing_selected') {
+                var cmd_id   = data['command-oid'];
+                var xy_id    = data['xy-oid'];
+                var level_id = data['level-oid'];
+
+                handler.push(function () {
+                    if (cmd_id !== 'nothing_selected') {
+                        var cmd = '{"transitiontime":' + data.transitionTime + ',"xy":"' + picker.xy[0] + ',' + picker.xy[1] + '",' + '"level":' + Math.round(picker.xy[2] * 100) + '}';
+                        vis.setValue(cmd_id, cmd);
+                    }
+                });
+
+                var onChange = function () {
+                    var xy = vis.states[xy_id + '.val'] || '0.5,0.5';
+                    if (typeof xy !== 'string') xy = '0.5,0.5';
+
+                    var level = vis.states[level_id + '.val'] || 0;
+                    xy = xy.split(',');
+                    if (xy.length === 2) {
+                        picker.fromXY(parseFloat(xy[0]), parseFloat(xy[1]), parseInt(level) / 100);
+                    }
+                };
+
+
+                vis.states.bind(xy_id    + '.val', onChange);
+                vis.states.bind(level_id + '.val', onChange);
+                onChange();
+            }
+            if (data['hue-oid'] && data['hue-oid'] !== 'nothing_selected' &&
+                    data['sat-oid'] && data['sat-oid'] !== 'nothing_selected' &&
+                    data['bri-oid'] && data['bri-oid'] !== 'nothing_selected') {
+                var hue = data['hue-oid'];
+                var sat = data['sat-oid'];
+                var bri = data['bri-oid'];
+
+                handler.push(function () {
+                    vis.setValue(hue, parseFloat(picker.hsv[0]).toFixed(decimal));
+                    vis.setValue(sat, parseFloat((picker.hsv[1] / factor).toFixed(decimal)));
+                    vis.setValue(bri, parseFloat((picker.hsv[2] / factor).toFixed(decimal)));
+                });
+
+                var htimer = null;
+                var hueChanged = function () {
+                    if (htimer) clearTimeout(htimer);
+                    htimer = setTimeout(function () {
+                        htimer = null;
+                        picker.fromHSV(
+                            Math.round(parseFloat(vis.states[hue + '.val'] || 0)),
+                            Math.round(parseFloat(vis.states[sat + '.val'] || 0) * factor),
+                            Math.round(parseFloat(vis.states[bri + '.val'] || 0) * factor)
+                        );
+                    }, 10);
+                };
+
+                vis.states.bind(hue + '.val', hueChanged);
+                vis.states.bind(sat + '.val', hueChanged);
+                vis.states.bind(bri + '.val', hueChanged);
+
+                hueChanged();
+            }
+            if (data['red-oid'] && data['red-oid']  !== 'nothing_selected' &&
+                    data['green-oid'] && data['green-oid'] !== 'nothing_selected' &&
+                    data['blue-oid']  && data['blue-oid']  !== 'nothing_selected') {
+                var r = data['red-oid'];
+                var g = data['green-oid'];
+                var b = data['blue-oid'];
+
+                handler.push(function () {
+                    vis.setValue(r, parseFloat((picker.rgb[0] / factor).toFixed(decimal)));
+                    vis.setValue(g, parseFloat((picker.rgb[1] / factor).toFixed(decimal)));
+                    vis.setValue(b, parseFloat((picker.rgb[2] / factor).toFixed(decimal)));
+                });
+
+                var timer = null;
+                var rgbChanged = function () {
+                    if (timer) clearTimeout(timer);
+                    timer = setTimeout(function () {
+                        timer = null;
+                        picker.fromRGB(
+                                Math.round(parseFloat(vis.states[r + '.val'] || 0) * factor),
+                                Math.round(parseFloat(vis.states[g + '.val'] || 0) * factor),
+                                Math.round(parseFloat(vis.states[b + '.val'] || 0) * factor)
+                        );
+                    }, 10);
+                };
+
+                vis.states.bind(r + '.val', rgbChanged);
+                vis.states.bind(g + '.val', rgbChanged);
+                vis.states.bind(b + '.val', rgbChanged);
+
+                rgbChanged();
+            }
+            if (data['rgb-oid'] && data['rgb-oid'] !== 'nothing_selected') {
+                var rgb = data['rgb-oid'];
+
+                handler.push(function () {
+                    vis.setValue(rgb, picker.toHEXString());
+                });
+
+                var _rgbChanged = function () {
+                    picker.fromString(vis.states[rgb + '.val'] || '');
+                };
+
+                vis.states.bind(rgb + '.val', _rgbChanged);
+
+                _rgbChanged();
+            }
+        }
+    };
+    if (vis.editMode) {
+        vis.binds.colorpicker.changedHUE = function (widgetID, view, newId, fields) {
+            var cmd     = vis.objects[newId];
             var changed = [];
+
             // If it is real object and state
             if (cmd && cmd.common && cmd.type == 'state') {
-                var light = vis.objects[newId.split('.', 4).join('.')];
-                var xy = vis.objects[newId.split('.', 4).join('.')+'.xy'];
-                var level = vis.objects[newId.split('.', 4).join('.')+'.level'];
+                var light   = vis.objects[newId.split('.', 4).join('.')];
+                var xy      = vis.objects[newId.split('.', 4).join('.') + '.xy'];
+                var level   = vis.objects[newId.split('.', 4).join('.') + '.level'];
 
-                if (xy && xy.type === 'state' && !vis.views[view].widgets[widgetID].data["xy-oid"]) {
+                if (xy && xy.type === 'state' && !vis.views[view].widgets[widgetID].data['xy-oid']) {
                     changed.push('xy-oid');
-                    vis.views[view].widgets[widgetID].data["xy-oid"] = newId.split('.', 4).join('.')+'.xy';
-                    vis.widgets[widgetID].data["xy-oid"] = newId.split('.', 4).join('.')+'.xy';
+                    vis.views[view].widgets[widgetID].data['xy-oid'] = newId.split('.', 4).join('.') + '.xy';
+                    vis.widgets[widgetID].data['xy-oid'] = newId.split('.', 4).join('.')+'.xy';
                 }
-                if (level && level.type === 'state' && !vis.views[view].widgets[widgetID].data["level-oid"]) {
+                if (level && level.type === 'state' && !vis.views[view].widgets[widgetID].data['level-oid']) {
                     changed.push('level-oid');
-                    vis.views[view].widgets[widgetID].data["level-oid"] = newId.split('.', 4).join('.')+'.level';
-                    vis.widgets[widgetID].data["level-oid"] = newId.split('.', 4).join('.')+'.level';
+                    vis.views[view].widgets[widgetID].data['level-oid'] = newId.split('.', 4).join('.') + '.level';
+                    vis.widgets[widgetID].data['level-oid'] = newId.split('.', 4).join('.') + '.level';
                 }
                 if (light.native.modelid !== undefined && !vis.views[view].widgets[widgetID].data.gamut) {
                     changed.push('gamut');
@@ -301,8 +566,9 @@
                 }
             }
             return changed;
-        }
-    };
+        };
+    }
+
 	vis.binds.colorpicker.showVersion();
 </script>
 
@@ -313,26 +579,34 @@
         data-vis-set="colorpicker"
         data-vis-type="ctrl,color"
         data-vis-name="RGB spectrum"
-        data-vis-attrs="red-oid/id;green-oid/id;blue-oid/id;divisor[255];decimal[0]/slider,0,5,1">
+        data-vis-attrs="rgb-oid/id;"
+        data-vis-attrs0="group.rgb;red-oid/id;green-oid/id;blue-oid/id;"
+        data-vis-attrs1="group.hue;hue-oid/id;sat-oid/id;bri-oid/id;"
+        data-vis-attrs2="group.extra;factor[1];decimal[0]/slider,0,5,1;"
+        >
     <div class="vis-widget <%== this.data.attr('class') %>" style="" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
-            <input id="<%= this.data.attr('wid') %>_spectrum" <%= (el) -> vis.binds.colorpicker.spectrum(el, data.attr('red-oid'), data.attr('green-oid'), data.attr('blue-oid'), data.attr('divisor'), data.attr('decimal')) %>>
+            <input style="width: 100%; height: 100%" <%= (el) -> vis.binds.colorpicker.spectrum(el, data) %> />
         </div>
     </div>
 </script>
-
 
 <script id="tplRGBFarbtastic"
         class="vis-tpl" 
         type="text/ejs"
         data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplRGBFarbtastic.png"></img>'
         data-vis-set="colorpicker"
-        data-vis-name="ctrl - rgb farbtastic" 
-        data-vis-attrs="red-oid/id;green-oid/id;blue-oid/id;divisor[255];decimal[0]/slider,0,5,1">
+        data-vis-type="ctrl,color"
+        data-vis-name="farbtastic"
+        data-vis-attrs="rgb-oid/id;"
+        data-vis-attrs0="group.rgb;red-oid/id;green-oid/id;blue-oid/id;"
+        data-vis-attrs1="group.hue;hue-oid/id;sat-oid/id;bri-oid/id;"
+        data-vis-attrs2="group.extra;factor[1];decimal[0]/slider,0,5,1;"
+        >
     <div class="vis-widget <%== this.data.attr('class') %>" style="width: 196px; height: 196px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
-            <div id="<%= this.data.attr('wid') %>_farbtastic"></div>
-            <input id="<%= this.data.attr('wid') %>_farbtastic_input" value="" <%= (el) -> vis.binds.colorpicker.farbtastic(el, data.attr('red-oid'), data.attr('green-oid'), data.attr('blue-oid'), data.attr('divisor'), data.attr('decimal')) %>>
+            <div></div>
+            <input <%= (el) -> vis.binds.colorpicker.farbtastic(el, data) %> />
         </div>
     </div>
 </script>
@@ -344,75 +618,35 @@
         data-vis-set="colorpicker"
         data-vis-type="ctrl,color"
         data-vis-name="Philips HUE"
-        data-vis-attrs="command-oid/id/changedHUE;xy-oid/id;level-oid/id;gamut;transitionTime[4]/number,0,30000,1;pickerWidth[100]/number,0,500,1;pickerHeight[100]/number,0,500,1;pickerBackground/color;buttonName[HUE];closeButton[close]">
+        data-vis-attrs="command-oid/id/changedHUE;xy-oid/id;level-oid/id;gamut;transitionTime[4]/number,0,30000,1;pickerWidth[100]/number,0,500,1;pickerHeight[100]/number,0,500,1;pickerBackground/color;buttonName[HUE]/html;closeButton[close];"
+        data-vis-attrs0="group.rgb;red-oid/id;green-oid/id;blue-oid/id;divisor[1];decimal[0]/slider,0,5,1;rgb-oid/id;"
+        data-vis-attrs1="group.hue;hue-oid/id;sat-oid/id;bri-oid/id;"
+        >
     <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body" style="display:table;">
-            <div class="ui-button ui-state-default ui-corner-all" style="width:100%;height:100%;display:table-cell;" id="<%= this.data.attr('wid') %>_jscolorcie" value="" <%= (el) -> vis.binds.colorpicker.jscolorcie(el, data.attr('command-oid'), data.attr('xy-oid'), data.attr('level-oid'), data.attr('pickerWidth'), data.attr('pickerHeight'), data.attr('pickerBackground'), data.attr('gamut'), data.attr('transitionTime'), data.attr('buttonName'), data.attr('closeButton')) %> ></div>
+            <div class="ui-button ui-state-default ui-corner-all" style="width:100%;height:100%;display:table-cell;" <%= (el) -> vis.binds.colorpicker.jscolorcie(el, data) %> ></div>
         </div>
     </div>
 </script>
-
-
-        <!--
 
 <script id="tplJscolor" 
 		type="text/ejs" 
-		class="vis-tpl" 
-		data-vis-set="colorpicker" 
-		data-vis-name="jscolor" 
-		data-vis-attrs="hue-id/id;sat-oid/id;bri-oid/id">
-    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 200px; height: 130px; border: 1px solid #000; background: #fff;" id="<%= this.data.attr('wid') %>">
-        <div class="vis-widget-body">
-            <input id="<%= this.data.attr('wid') %>_jscolor">
-            <div class="popup-helper" <%= (el) -> vis.binds.colorpicker.jscolor(el) %>></div>
+		class="vis-tpl"
+        data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplJscolor.png"></img>'
+		data-vis-set="colorpicker"
+        data-vis-type="ctrl,color"
+		data-vis-name="RGBColor"
+		data-vis-attrs="title[RGB:&nbsp];closeText[X];rgb-oid/id;"
+        data-vis-attrs0="group.rgb;red-oid/id;green-oid/id;blue-oid/id;"
+        data-vis-attrs1="group.hue;hue-oid/id;sat-oid/id;bri-oid/id;"
+        data-vis-attrs2="group.extra;factor[1];decimal[0]/slider,0,5,1;"
+        >
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 96px; height: 50px;" id="<%= this.data.attr('wid') %>">
+        <div class="vis-widget-body" style="display: inline-block">
+            <table style="border: 0; border-spacing: 0; width: 100%; height: 100%" class="vis-no-spaces"><tr class="vis-no-spaces">
+                <td class="vis-no-spaces"><%== this.data.attr('title') %></td>
+                <td class="vis-no-spaces"><input style="width: calc(100% - 5px); height: 100%" readonly <%= (el) -> vis.binds.colorpicker.jscolor(el, this.data) %> /></td>
         </div>
     </div>
 </script>
 
-
-
-
-
-<script type="text/ejs" id="tplDmxFarbtastic" class="vis-tpl" data-vis-set="colorpicker" data-vis-name="dmx_ctrl - farbtastic (unfertig)" data-vis-attrs="program_id;red_channel;green_channel;blue_channel">
-    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 195px; height: 195px;" id="<%= this.data.attr('wid') %>">
-        <div class="vis-widget-body">
-            <div id="<%= this.data.attr('wid') %>_farbtastic"></div>
-            <input id="<%= this.data.attr('wid') %>_farbtastic_input" value=""  <%= (el) -> vis.binds.colorpicker.farbtastic(el) %>>
-        </div>
-    </div>
-</script>
-
-<script type="text/ejs" id="tplFarbtasticDialog" class="vis-tpl" data-vis-set="colorpicker" data-vis-name="hue_ctrl - farbtastic jqui Dialog (unfertig)" data-vis-attrs="lamp_id;program_id;hue_id;sat_id;bri_id">
-    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 200px; height: 130px; border: 1px solid #000; background: #fff;" id="<%= this.data.attr('wid') %>">
-        <div class="vis-widget-body">
-            <div id="<%= this.data.attr('wid') %>_farbtastic"></div>
-            <input id="<%= this.data.attr('wid') %>_farbtastic_input" value="" <%= (el) -> vis.binds.colorpicker.farbtastic(el) %>>
-        </div>
-    </div>
-</script>
-
-<script type="text/ejs" id="tplDmxFarbtasticDialog" class="vis-tpl" data-vis-set="colorpicker" data-vis-name="dmx_ctrl - farbtastic jqui Dialog (unfertig)" data-vis-attrs="program_id;red_channel;green_channel;blue_channel">
-    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 195px; height: 195px;" id="<%= this.data.attr('wid') %>">
-        <div class="vis-widget-body">
-            <div id="<%= this.data.attr('wid') %>_farbtastic"></div>
-            <input id="<%= this.data.attr('wid') %>_farbtastic_input" value=""  <%= (el) -> vis.binds.colorpicker.farbtastic(el) %>>
-        </div>
-    </div>
-</script>
-
-
-<script type="text/ejs" id="tplSpectrum" class="vis-tpl" data-vis-set="colorpicker" data-vis-name="hue_ctrl - spectrum (unfertig)" data-vis-attrs="lamp_id;program_id;hue_id;sat_id;bri_id">
-    <div class="vis-widget <%== this.data.attr('class') %>" style="" id="<%= this.data.attr('wid') %>">
-        <div class="vis-widget-body">
-            <input id="<%= this.data.attr('wid') %>_spectrum" value="" <%= (el) -> vis.binds.colorpicker.spectrum(el) %>>
-        </div>
-    </div>
-</script>
-
-
-<script type="text/ejs" id="tplDmxSpectrum" class="vis-tpl" data-vis-set="colorpicker" data-vis-name="dmx_ctrl - spectrum (unfertig)" data-vis-attrs="program_id;red_channel;green_channel;blue_channel">
-    <div class="vis-widget <%== this.data.attr('class') %>" style="" id="<%= this.data.attr('wid') %>">
-        <div class="vis-widget-body">
-            <input id="<%= this.data.attr('wid') %>_spectrum" value="" <%= (el) -> vis.binds.colorpicker.spectrum(el) %>>
-        </div>
-    </div
