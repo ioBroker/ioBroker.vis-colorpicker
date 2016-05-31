@@ -3,6 +3,9 @@
 // Author: Brian Grinstead
 // License: MIT
 
+// Modified for particular requirements by A. Grobelnik eQ-3 GmbH (05/2015)
+// Modified by Pmant (ioBroker)
+
 (function (factory) {
     "use strict";
 
@@ -58,7 +61,8 @@
             palette: [["#ffffff", "#000000", "#ff0000", "#ff8000", "#ffff00", "#008000", "#0000ff", "#4b0082", "#9400d3"]],
             selectionPalette: [],
             disabled: false,
-            offset: null
+            offset: null,
+            homematic: false
         },
         spectrums = [],
         IE = !!/msie/i.exec( window.navigator.userAgent ),
@@ -238,6 +242,10 @@
             clickoutFiresChange = !opts.showButtons || opts.clickoutFiresChange,
             isEmpty = !initialColor,
             allowEmpty = opts.allowEmpty && !isInputTypeColor;
+            if (opts.homematic) {
+                container.find(".sp-val").attr("class", "sp-val-hm");
+                container.find(".sp-sat").attr("class", "sp-sat-hm");
+            }
 
         function applyOptions() {
 
@@ -395,6 +403,7 @@
             }, dragStart, dragStop);
 
             draggable(slider, function (dragX, dragY) {
+                opts.homematic && (currentSaturation = 1); // AG
                 currentHue = parseFloat(dragY / slideHeight);
                 isEmpty = false;
                 if (!opts.showAlpha) {
@@ -402,39 +411,39 @@
                 }
                 move();
             }, dragStart, dragStop);
+            if (!opts.homematic) {
+                draggable(dragger, function (dragX, dragY, e) {
+                    // shift+drag should snap the movement to either the x or y axis.
+                    if (!e.shiftKey) {
+                        shiftMovementDirection = null;
+                    }
+                    else if (!shiftMovementDirection) {
+                        var oldDragX = currentSaturation * dragWidth;
+                        var oldDragY = dragHeight - (currentValue * dragHeight);
+                        var furtherFromX = Math.abs(dragX - oldDragX) > Math.abs(dragY - oldDragY);
 
-            draggable(dragger, function (dragX, dragY, e) {
+                        shiftMovementDirection = furtherFromX ? "x" : "y";
+                    }
 
-                // shift+drag should snap the movement to either the x or y axis.
-                if (!e.shiftKey) {
-                    shiftMovementDirection = null;
-                }
-                else if (!shiftMovementDirection) {
-                    var oldDragX = currentSaturation * dragWidth;
-                    var oldDragY = dragHeight - (currentValue * dragHeight);
-                    var furtherFromX = Math.abs(dragX - oldDragX) > Math.abs(dragY - oldDragY);
+                    var setSaturation = !shiftMovementDirection || shiftMovementDirection === "x";
+                    var setValue = !shiftMovementDirection || shiftMovementDirection === "y";
 
-                    shiftMovementDirection = furtherFromX ? "x" : "y";
-                }
+                    if (setSaturation) {
+                        currentSaturation = parseFloat(dragX / dragWidth);
+                    }
+                    if (setValue) {
+                        currentValue = parseFloat((dragHeight - dragY) / dragHeight);
+                    }
 
-                var setSaturation = !shiftMovementDirection || shiftMovementDirection === "x";
-                var setValue = !shiftMovementDirection || shiftMovementDirection === "y";
+                    isEmpty = false;
+                    if (!opts.showAlpha) {
+                        currentAlpha = 1;
+                    }
 
-                if (setSaturation) {
-                    currentSaturation = parseFloat(dragX / dragWidth);
-                }
-                if (setValue) {
-                    currentValue = parseFloat((dragHeight - dragY) / dragHeight);
-                }
+                    move();
 
-                isEmpty = false;
-                if (!opts.showAlpha) {
-                    currentAlpha = 1;
-                }
-
-                move();
-
-            }, dragStart, dragStop);
+                }, dragStart, dragStop);
+            }
 
             if (!!initialColor) {
                 set(initialColor);
@@ -576,6 +585,7 @@
         function dragStop() {
             isDragging = false;
             container.removeClass(draggingClass);
+            opts.homematic && updateOriginalInput(true);
             boundElement.trigger('dragstop.spectrum', [ get() ]);
         }
 
@@ -750,8 +760,9 @@
 
             // Update dragger background color (gradients take care of saturation and value).
             var flatColor = tinycolor.fromRatio({ h: currentHue, s: 1, v: 1 });
-            dragger.css("background-color", flatColor.toHexString());
-
+            opts.homematic ?
+                dragger.css("background-color", previewElement.css("background-color"))
+                : dragger.css("background-color", flatColor.toHexString());
             // Get a format that alpha will be included in (hex and names ignore alpha)
             var format = currentPreferredFormat;
             if (currentAlpha < 1 && !(currentAlpha === 0 && format === "name")) {
@@ -778,6 +789,7 @@
                 // Update the replaced elements background color (with actual selected color)
                 if (rgbaSupport || realColor.alpha === 1) {
                     previewElement.css("background-color", realRgb);
+                    opts.homematic && dragger.css("background-color", previewElement.css("background-color")); // AG
                 }
                 else {
                     previewElement.css("background-color", "transparent");
@@ -832,7 +844,7 @@
                 //make sure helpers are visible
                 alphaSlideHelper.show();
                 slideHelper.show();
-                dragHelper.show();
+                opts.homematic ? dragHelper.hide() : dragHelper.show();
 
                 // Where to show the little circle in that displays your current selected color
                 var dragX = s * dragWidth;
@@ -875,13 +887,21 @@
             }
 
             if (isInput) {
-                boundElement.val(displayColor);
+                opts.homematic ? boundElement.val(convertWhiteValue(displayColor)) : boundElement.val(displayColor);
             }
 
             if (fireCallback && hasChanged) {
                 callbacks.change(color);
                 boundElement.trigger('change', [ color ]);
             }
+        }
+
+        function convertWhiteValue(displayColor) {
+            var result = displayColor;
+            if ((opts.preferredFormat == "convert360To200") && (currentHue == 0) && (currentSaturation == 0) && (currentValue == 1)) {
+                result = 200;
+            }
+            return result;
         }
 
         function reflow() {
@@ -1317,6 +1337,14 @@
                 "hsv("  + h + ", " + s + "%, " + v + "%)" :
                 "hsva(" + h + ", " + s + "%, " + v + "%, "+ this._roundA + ")";
             },
+            toHMString: function() {
+                var hsv = rgbToHsv(this._r, this._g, this._b);
+                var h = mathRound(hsv.h * 360), s = mathRound(hsv.s * 100), v = mathRound(hsv.v * 100);
+                if (h == 0 && s == 0 && v == 100){
+                    return 200;
+                }
+                return Math.round(h / 360 * 200);
+            },
             toHsl: function() {
                 var hsl = rgbToHsl(this._r, this._g, this._b);
                 return { h: hsl.h * 360, s: hsl.s, l: hsl.l, a: this._a };
@@ -1418,6 +1446,10 @@
                 }
                 if (format === "hsv") {
                     formattedString = this.toHsvString();
+                }
+                if (format === "convert360To200") {
+                    formattedString = this.toHMString();
+                    return formattedString;
                 }
 
                 return formattedString || this.toHexString();
