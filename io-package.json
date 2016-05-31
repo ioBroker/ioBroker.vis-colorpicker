@@ -1,11 +1,18 @@
 {
     "common": {
         "name":                     "vis-colorpicker",
-        "version": "1.0.2",
+        "version": "1.1.0",
 		"news": {
-			"en": "(bluefox) Fix Philips HUE Colorpicker",
-			"de": "(bluefox) Fix Philips HUE Colorpicker",
-			"ru": "(bluefox) Fix Philips HUE Colorpicker"
+			"1.1.0": {
+				"en": "add homematic colorpicker",
+				"de": "add homematic colorpicker",
+				"ru": "add homematic colorpicker"
+			},
+			"1.0.2": {
+				"en": "Fix Philips HUE Colorpicker",
+				"de": "Fix Philips HUE Colorpicker",
+				"ru": "Fix Philips HUE Colorpicker"
+			}
 		},
         "title":                    "ioBroker Visualisation - color picker style Widgets",
         "desc": {
@@ -23,8 +30,8 @@
         "readme":                   "https://github.com/ioBroker/ioBroker.vis-colorpicker/blob/master/README.md",
         "authors": [
 			"bluefox <dogafox@gmail.com>",
-            "hobbyquaker <hq@ccu.io>",
-			"pmant <patrickmo@gmx.de>"
+			"pmant <patrickmo@gmx.de>",
+            "hobbyquaker <hq@ccu.io>"
         ],
         "localLink":                "%web_protocol%://%ip%:%web_port%/vis/edit.html",
         "license":                  "MIT",
