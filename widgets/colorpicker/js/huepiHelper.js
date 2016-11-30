@@ -153,33 +153,34 @@ huepi.HelperRGBtoXY = function(Red, Green, Blue)
 huepi.HelperGamutXYforModel = function(Px, Py, Model)
 {
   Model = Model || "LCT001"; // default hue Bulb 2012
-  var ModelType = Model.slice(0,3);
   var PRed;
   var PGreen;
   var PBlue;
   var NormDot;
 
+  var gamuts = {
+    a: ["LST001", "LLC010", "LLC011", "LLC012", "LLC006", "LLC007", "LLC013"],
+    b: ['LCT001', "LCT007", "LCT002", "LCT003", "LLM001"],
+    c: ["LCT010", "LCT014", "LCT011", "LLC020", "LST002"]
+  };
+
   //http://www.developers.meethue.com/documentation/supported-lights
-  if (Model === 'none') {
-    PRed = {x: 2.0, y: 0.0};
-    PGreen = {x: 0.0, y: 2.0};
-    PBlue = {x: 0.000001, y: 0.000001};
-  } else if (Model === 'LLM001' || ModelType === 'LCT') { // Gamut B
+  if (gamuts.b.indexOf(Model) !== -1) { // Gamut B
     PRed = {x: 0.675, y: 0.322};
     PGreen = {x: 0.409, y: 0.518};
     PBlue = {x: 0.167, y: 0.04};
-  } else if (Model === 'LLC020' || Model === 'LST002') { // Gamut C
+  } else if (gamuts.c.indexOf(Model) !== -1) { // Gamut C
     PRed = {x: 0.692, y: 0.308};
     PGreen = {x: 0.17, y: 0.7};
     PBlue = {x: 0.153, y: 0.048};
-  } else if (Model === 'LST001' || ModelType === 'LLC') { // Gamut A
+  } else if (gamuts.a.indexOf(Model) !== -1) { // Gamut A
     PRed = {x: 0.704, y: 0.296};
     PGreen = {x: 0.2151, y: 0.7106};
     PBlue = {x: 0.138, y: 0.08};
   } else {
     PRed = {x: 1.0, y: 0.0};
     PGreen = {x: 0.0, y: 1.0};
-    PBlue = {x: 0.000001, y: 0.000001};
+    PBlue = {x: 0.0, y: 0.0};
   }
 
   var VBR = {x: PRed.x - PBlue.x, y: PRed.y - PBlue.y}; // Blue to Red
@@ -242,29 +243,30 @@ huepi.HelperGamutXYforModel = function(Px, Py, Model)
 huepi.HelperZoomXYforModel = function(Px, Py, Model)
 {
   Model = Model || "LCT001"; // default hue Bulb 2012
-  var ModelType = Model.slice(0,3);
+
+  var gamuts = {
+    a: ["LST001", "LLC010", "LLC011", "LLC012", "LLC006", "LLC007", "LLC013"],
+    b: ['LCT001', "LCT007", "LCT002", "LCT003", "LLM001"],
+    c: ["LCT010", "LCT014", "LCT011", "LLC020", "LST002"]
+  };
 
   //http://www.developers.meethue.com/documentation/supported-lights
-  if (Model === 'none') {
-    PRed = {x: 2.0, y: 0.0};
-    PGreen = {x: 0.0, y: 2.0};
-    PBlue = {x: 0.000001, y: 0.000001};
-  } else if (Model === 'B' || Model === 'LLM001' || ModelType === 'LCT') { // Gamut B
+  if (gamuts.b.indexOf(Model) !== -1) { // Gamut B
     PRed = {x: 0.675, y: 0.322};
     PGreen = {x: 0.409, y: 0.518};
     PBlue = {x: 0.167, y: 0.04};
-  } else if (Model === 'C' || Model === 'LLC020' || Model === 'LST002') { // Gamut C
+  } else if (gamuts.c.indexOf(Model) !== -1) { // Gamut C
     PRed = {x: 0.692, y: 0.308};
     PGreen = {x: 0.17, y: 0.7};
     PBlue = {x: 0.153, y: 0.048};
-  } else if (Model === 'A' || Model === 'LST001' || ModelType === 'LLC') { // Gamut A
+  } else if (gamuts.a.indexOf(Model) !== -1) { // Gamut A
     PRed = {x: 0.704, y: 0.296};
     PGreen = {x: 0.2151, y: 0.7106};
     PBlue = {x: 0.138, y: 0.08};
   } else {
     PRed = {x: 1.0, y: 0.0};
     PGreen = {x: 0.0, y: 1.0};
-    PBlue = {x: 0.000001, y: 0.000001};
+    PBlue = {x: 0.0, y: 0.0};
   }
 
   return [
@@ -282,29 +284,30 @@ huepi.HelperZoomXYforModel = function(Px, Py, Model)
 huepi.HelperUnzoomXYforModel = function(Zx, Zy, Model)
 {
   Model = Model || "LCT001"; // default hue Bulb 2012
-  var ModelType = Model.slice(0,3);
+
+  var gamuts = {
+    a: ["LST001", "LLC010", "LLC011", "LLC012", "LLC006", "LLC007", "LLC013"],
+    b: ['LCT001', "LCT007", "LCT002", "LCT003", "LLM001"],
+    c: ["LCT010", "LCT014", "LCT011", "LLC020", "LST002"]
+  };
 
   //http://www.developers.meethue.com/documentation/supported-lights
-  if (Model === 'none') {
-    PRed = {x: 2.0, y: 0.0};
-    PGreen = {x: 0.0, y: 2.0};
-    PBlue = {x: 0.000001, y: 0.000001};
-  } else if (Model === 'B' || Model === 'LLM001' || ModelType === 'LCT') { // Gamut B
+  if (gamuts.b.indexOf(Model) !== -1) { // Gamut B
     PRed = {x: 0.675, y: 0.322};
     PGreen = {x: 0.409, y: 0.518};
     PBlue = {x: 0.167, y: 0.04};
-  } else if (Model === 'C' || Model === 'LLC020' || Model === 'LST002') { // Gamut C
+  } else if (gamuts.c.indexOf(Model) !== -1) { // Gamut C
     PRed = {x: 0.692, y: 0.308};
     PGreen = {x: 0.17, y: 0.7};
     PBlue = {x: 0.153, y: 0.048};
-  } else if (Model === 'A' || Model === 'LST001' || ModelType === 'LLC') { // Gamut A
+  } else if (gamuts.a.indexOf(Model) !== -1) { // Gamut A
     PRed = {x: 0.704, y: 0.296};
     PGreen = {x: 0.2151, y: 0.7106};
     PBlue = {x: 0.138, y: 0.08};
   } else {
     PRed = {x: 1.0, y: 0.0};
     PGreen = {x: 0.0, y: 1.0};
-    PBlue = {x: 0.000001, y: 0.000001};
+    PBlue = {x: 0.0, y: 0.0};
   }
 
   return [
