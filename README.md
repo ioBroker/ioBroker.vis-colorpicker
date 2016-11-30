@@ -12,6 +12,9 @@ Color selector widgets for ioBroker.vis
 ![Example](img/widgets.png)
 
 ## Changelog
+### 1.1.1 (2016-11-30)
+- (Pmant) add new hue bulbs and fix gamut
+
 ### 1.1.0 (2016-05-31)
 - (Pmant) add homematic colorpicker
 

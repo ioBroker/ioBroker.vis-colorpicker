@@ -1,8 +1,13 @@
 {
     "common": {
         "name":                     "vis-colorpicker",
-        "version": "1.1.0",
+        "version": "1.1.1",
 		"news": {
+			"1.1.1": {
+				"en": "add new hue bulbs and fix gamut",
+				"de": "Neue hue-Typen und korrigiere gamut",
+				"ru": "Добавлены новые типы ламп, исправлен gamut"
+			},
 			"1.1.0": {
 				"en": "add homematic colorpicker",
 				"de": "add homematic colorpicker",
