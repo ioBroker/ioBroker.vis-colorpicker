@@ -594,9 +594,9 @@
             var img = document.createElement("img");
             canvas.appendChild(img);
             function redraw() {
-                var ctx = canvas.getContext('2d');
                 canvas.width = $this.width();
                 canvas.height = $this.height();
+                var ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "#FFFFFF";
                 ctx.fillRect(0, 0, canvas.width, canvas.height); // Need to Fill Canvas otherwise its unable to be modified...
@@ -626,15 +626,25 @@
                         }
                     }
                 }
+                var xyGet = vis.states[xy_id + '.val'] || '0.5,0.5';
+                if (typeof xyGet !== 'string') xyGet = '0.5,0.5';
+                xyGet = xyGet.split(',');
+                xyGet = huepi.HelperUnzoomXYforModel(xyGet[0], xyGet[1], data.gamut);
+                var centerX = xyGet[0] * canvas.width;
+                var centerY = canvas.height - (xyGet[1] * canvas.height);
+                var radius = 6;
                 ctx.putImageData(XYImagedata, 0, 0);
                 img.src = canvas.toDataURL("image/png");
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#000000';
+                ctx.stroke();
                 $this.html(canvas);
             }
-
             $this.parent().parent().resize(function() {
 				redraw();
 			});
-
             $this.show(function() {
                 redraw();
             });
@@ -650,10 +660,15 @@
                         xy = huepi.HelperZoomXYforModel(xy[0], xy[1], data.gamut);
 					}
 					var cmd = '{"transitiontime":' + data.transitionTime + ',"xy":"' + xy[0] + ',' + xy[1] + '"}';
-                    console.log(cmd);
 					vis.setValue(cmd_id, cmd);
                 });
             }
+
+            var onChange = function () {
+			    redraw();
+            };
+
+            vis.states.bind(xy_id    + '.val', onChange);
 
         }
     };
