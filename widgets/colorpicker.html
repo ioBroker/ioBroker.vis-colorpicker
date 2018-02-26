@@ -663,13 +663,33 @@
 					var cmd = '{"transitiontime":' + data.transitionTime + ',"xy":"' + xy[0] + ',' + xy[1] + '"}';
 					vis.setValue(cmd_id, cmd);
                 });
+
+                var onChange = function () {
+                    redraw();
+                };
+
+                vis.states.bind(xy_id    + '.val', onChange);
             }
+        },
+        hueindicatorxy: function (el, data) {
+            data = data._data ? JSON.parse(JSON.stringify(data._data)) : data;
+            data.gamut = typeof data.gamut === 'string' ? data.gamut : 'default';
+            var $this = $(el);
 
-            var onChange = function () {
-			    redraw();
-            };
+            if (data['xy-oid']       && data['xy-oid']      !== 'nothing_selected') {
+                var xy_id    = data['xy-oid'];
 
-            vis.states.bind(xy_id    + '.val', onChange);
+                var onChange = function () {
+                    var xyGet = vis.states[xy_id + '.val'] || '0.5,0.5';
+                    if (typeof xyGet !== 'string') xyGet = '0.5,0.5';
+                    xyGet = xyGet.split(',');
+                    var rgb = huepi.HelperXYtoRGBforModel(xyGet[0], xyGet[1], 1, data.gamut);
+                    $this.css("background-color", huepi.HelperRGBToHEX(rgb));
+                };
+
+                vis.states.bind(xy_id    + '.val', onChange);
+                onChange();
+            }
         },
         huepickerct: function (el, data) {
             data = data._data ? JSON.parse(JSON.stringify(data._data)) : data;
@@ -732,13 +752,31 @@
                     var cmd = '{"transitiontime":' + data.transitionTime + ',"ct":"' + ct + '"}';
                     vis.setValue(cmd_id, cmd);
                 });
+
+                var onChange = function () {
+                    redraw();
+                };
+
+                vis.states.bind(ct_id    + '.val', onChange);
             }
+        },
+        hueindicatorct: function (el, data) {
+            data = data._data ? JSON.parse(JSON.stringify(data._data)) : data;
+            var $this = $(el);
 
-            var onChange = function () {
-                redraw();
-            };
+            if (data['ct-oid']       && data['ct-oid']      !== 'nothing_selected') {
+                var ct_id    = data['ct-oid'];
 
-            vis.states.bind(ct_id    + '.val', onChange);
+                var onChange = function () {
+                    var ctGet = parseInt(vis.states[ct_id + '.val']) || 153;
+                    ctGet = Math.max(2000, Math.min(6500, Math.round(Math.pow(10,6)/ctGet)));
+                    var rgb = huepi.HelperColortemperaturetoRGB(ctGet);
+                    $this.css("background-color", huepi.HelperRGBToHEX(rgb));
+                };
+
+                vis.states.bind(ct_id    + '.val', onChange);
+                onChange();
+            }
         }
     };
 
@@ -806,6 +844,27 @@
                     changed.push('ct-oid');
                     vis.views[view].widgets[widgetID].data['ct-oid'] = newId.split('.').slice(0,-1).join('.') + '.ct';
                     vis.widgets[widgetID].data['ct-oid'] = newId.split('.').slice(0,-1).join('.') + '.ct';
+                }
+            }
+            return changed;
+        };
+        vis.binds.colorpicker.changedHUEIndicatorXY = function (widgetID, view, newId, fields) {
+            var xy     = vis.objects[newId];
+            var changed = [];
+
+            // If it is real object and state
+            if (xy && xy.common && xy.type === 'state') {
+                var light   = vis.objects[newId.split('.').slice(0,-1).join('.')];
+
+                if (xy && xy.type === 'state' && !vis.views[view].widgets[widgetID].data['xy-oid']) {
+                    changed.push('xy-oid');
+                    vis.views[view].widgets[widgetID].data['xy-oid'] = newId.split('.').slice(0,-1).join('.') + '.xy';
+                    vis.widgets[widgetID].data['xy-oid'] = newId.split('.').slice(0,-1).join('.') + '.xy';
+                }
+                if (light.native.modelid !== undefined && !vis.views[view].widgets[widgetID].data.gamut) {
+                    changed.push('gamut');
+                    vis.views[view].widgets[widgetID].data.gamut = light.native.modelid;
+                    vis.widgets[widgetID].data.gamut = light.native.modelid;
                 }
             }
             return changed;
@@ -891,7 +950,7 @@
 <script id="tplHUEPickerXY"
 		type="text/ejs"
 		class="vis-tpl"
-		data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplHUEjscolor.png"></img>'
+		data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplHUEPickerXY.png"></img>'
 		data-vis-set="colorpicker"
 		data-vis-type="ctrl,color"
 		data-vis-name="Philips HUE XY-Picker"
@@ -904,10 +963,26 @@
     </div>
 </script>
 
+<script id="tplHUEIndicatorXY"
+		type="text/ejs"
+		class="vis-tpl"
+		data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplHUEIndicatorXY.png"></img>'
+		data-vis-set="colorpicker"
+		data-vis-type="value,color"
+		data-vis-name="Philips HUE XY-Indicator"
+		data-vis-attrs="xy-oid/id/changedHUEIndicatorXY;gamut;"
+>
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+        <div class="vis-widget-body">
+            <div class="hue-indicator-xy" style="width:100%;height:100%;" <%= (el) -> vis.binds.colorpicker.hueindicatorxy(el, data) %> ></div>
+        </div>
+    </div>
+</script>
+
 <script id="tplHUEPickerCT"
 		type="text/ejs"
 		class="vis-tpl"
-		data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplHUEjscolor.png"></img>'
+		data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplHUEPickerCT.png"></img>'
 		data-vis-set="colorpicker"
 		data-vis-type="ctrl,color"
 		data-vis-name="Philips HUE CT-Picker"
@@ -916,6 +991,22 @@
     <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
             <div class="hue-canvas-ct" style="width:100%;height:100%;cursor:crosshair;" <%= (el) -> vis.binds.colorpicker.huepickerct(el, data) %> ></div>
+        </div>
+    </div>
+</script>
+
+<script id="tplHUEIndicatorCT"
+		type="text/ejs"
+		class="vis-tpl"
+		data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplHUEIndicatorCT.png"></img>'
+		data-vis-set="colorpicker"
+		data-vis-type="value,color"
+		data-vis-name="Philips HUE CT-Indicator"
+		data-vis-attrs="ct-oid/id;"
+>
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+        <div class="vis-widget-body">
+            <div class="hue-indicator-xy" style="width:100%;height:100%;" <%= (el) -> vis.binds.colorpicker.hueindicatorct(el, data) %> ></div>
         </div>
     </div>
 </script>

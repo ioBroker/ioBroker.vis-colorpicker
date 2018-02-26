@@ -481,3 +481,14 @@ huepi.HelperToStringArray = function(Items) {
   }
 };
 
+/**
+ * @param {object} rgb - rgb values to convert
+ * @returns {string} RGB-HEX-String
+ */
+huepi.HelperRGBToHEX = function (rgb) {
+    function componentToHex(c) {
+        var hex = (Math.round(c*255)).toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+    }
+    return "#" + componentToHex(rgb.Red) + componentToHex(rgb.Green) + componentToHex(rgb.Blue);
+};
