@@ -159,9 +159,9 @@ huepi.HelperGamutXYforModel = function(Px, Py, Model)
   var NormDot;
 
   var gamuts = {
-    a: ["LST001", "LLC010", "LLC011", "LLC012", "LLC006", "LLC007", "LLC013"],
+    a: ["LST001", "LLC010", "LLC011", "LLC012", "LLC005", "LLC006", "LLC007", "LLC013", "LLC014"],
     b: ['LCT001', "LCT007", "LCT002", "LCT003", "LLM001"],
-    c: ["LCT010", "LCT014", "LCT011", "LLC020", "LST002"]
+    c: ["LCT010", "LCT014", "LCT015", "LCT016", "LCT011", "LCT012", "LLC020", "LST002"]
   };
 
   //http://www.developers.meethue.com/documentation/supported-lights
@@ -245,9 +245,9 @@ huepi.HelperZoomXYforModel = function(Px, Py, Model)
   Model = Model || "LCT001"; // default hue Bulb 2012
 
   var gamuts = {
-    a: ["LST001", "LLC010", "LLC011", "LLC012", "LLC006", "LLC007", "LLC013"],
-    b: ['LCT001', "LCT007", "LCT002", "LCT003", "LLM001"],
-    c: ["LCT010", "LCT014", "LCT011", "LLC020", "LST002"]
+      a: ["LST001", "LLC010", "LLC011", "LLC012", "LLC005", "LLC006", "LLC007", "LLC013", "LLC014"],
+      b: ['LCT001', "LCT007", "LCT002", "LCT003", "LLM001"],
+      c: ["LCT010", "LCT014", "LCT015", "LCT016", "LCT011", "LCT012", "LLC020", "LST002"]
   };
 
   //http://www.developers.meethue.com/documentation/supported-lights
@@ -286,9 +286,9 @@ huepi.HelperUnzoomXYforModel = function(Zx, Zy, Model)
   Model = Model || "LCT001"; // default hue Bulb 2012
 
   var gamuts = {
-    a: ["LST001", "LLC010", "LLC011", "LLC012", "LLC006", "LLC007", "LLC013"],
-    b: ['LCT001', "LCT007", "LCT002", "LCT003", "LLM001"],
-    c: ["LCT010", "LCT014", "LCT011", "LLC020", "LST002"]
+      a: ["LST001", "LLC010", "LLC011", "LLC012", "LLC005", "LLC006", "LLC007", "LLC013", "LLC014"],
+      b: ['LCT001', "LCT007", "LCT002", "LCT003", "LLM001"],
+      c: ["LCT010", "LCT014", "LCT015", "LCT016", "LCT011", "LCT012", "LLC020", "LST002"]
   };
 
   //http://www.developers.meethue.com/documentation/supported-lights
@@ -481,3 +481,14 @@ huepi.HelperToStringArray = function(Items) {
   }
 };
 
+/**
+ * @param {object} rgb - rgb values to convert
+ * @returns {string} RGB-HEX-String
+ */
+huepi.HelperRGBToHEX = function (rgb) {
+    function componentToHex(c) {
+        var hex = (Math.round(c*255)).toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+    }
+    return "#" + componentToHex(rgb.Red) + componentToHex(rgb.Green) + componentToHex(rgb.Blue);
+};

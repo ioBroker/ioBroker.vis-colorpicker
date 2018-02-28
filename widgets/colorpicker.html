@@ -580,28 +580,286 @@
 
                 _rgbChanged();
             }
+        },
+        huepickerxy: function (el, data) {
+            data = data._data ? JSON.parse(JSON.stringify(data._data)) : data;
+            data.gamut = typeof data.gamut === 'string' ? data.gamut : 'default';
+            data.transitionTime = parseInt(data.transitionTime) || 0;
+            var gamutZoom = true;
+
+            var $this = $(el);
+
+            //build canvas
+            var canvas = document.createElement('canvas');
+            var img = document.createElement("img");
+            canvas.appendChild(img);
+            function redraw() {
+                canvas.width = $this.width();
+                canvas.height = $this.height();
+                var ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#FFFFFF";
+                ctx.fillRect(0, 0, canvas.width, canvas.height); // Need to Fill Canvas otherwise its unable to be modified...
+                var XYImagedata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                for (var x = 0; x < canvas.width; x++) { // Every Pixel on ScanLine
+                    for (var y = 0; y < canvas.height; y++) { // Every ScanLine
+                        var Index = (x + y * canvas.width) * 4; // Index of Pixel
+                        var xy;
+                        if (gamutZoom){
+                            xy = huepi.HelperZoomXYforModel(x / canvas.width, 1 - (y / canvas.height), data.gamut);
+                        }else {
+                            xy = [
+                                x / canvas.width,
+                                1 - (y / canvas.height)
+                            ]
+                        }
+                        var XYColor = huepi.HelperXYtoRGBforModel(xy[0], xy[1], 1, data.gamut);
+                        var TestColor = huepi.HelperXYtoRGB(xy[0], xy[1], 1);
+                        if (TestColor.Red !== XYColor.Red || TestColor.Green !== XYColor.Green || TestColor.Blue !== XYColor.Blue){
+                            XYImagedata.data[Index] = XYColor.Red * 240;
+                            XYImagedata.data[Index + 1] = XYColor.Green * 240;
+                            XYImagedata.data[Index + 2] = XYColor.Blue * 240;
+                        }else {
+                            XYImagedata.data[Index] = XYColor.Red * 255;
+                            XYImagedata.data[Index + 1] = XYColor.Green * 255;
+                            XYImagedata.data[Index + 2] = XYColor.Blue * 255;
+                        }
+                    }
+                }
+                ctx.putImageData(XYImagedata, 0, 0);
+                img.src = canvas.toDataURL("image/png");
+
+                var xyGet = vis.states[xy_id + '.val'] || '0.5,0.5';
+                if (typeof xyGet !== 'string') xyGet = '0.5,0.5';
+                xyGet = xyGet.split(',');
+                xyGet = huepi.HelperUnzoomXYforModel(xyGet[0], xyGet[1], data.gamut);
+                var centerX = xyGet[0] * canvas.width;
+                var centerY = canvas.height - (xyGet[1] * canvas.height);
+                var radius = 6;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#000000';
+                ctx.stroke();
+                $this.html(canvas);
+            }
+            $this.parent().parent().resize(function() {
+				redraw();
+			});
+            $this.show(function() {
+                redraw();
+            });
+
+			if (data['command-oid']  && data['command-oid'] !== 'nothing_selected' &&
+                data['xy-oid']       && data['xy-oid']      !== 'nothing_selected') {
+                var cmd_id   = data['command-oid'];
+                var xy_id    = data['xy-oid'];
+
+                $this.click(function (e) {
+                    var xy = [e.offsetX / canvas.width, 1 - (e.offsetY / canvas.height)];
+                    if (gamutZoom) {
+                        xy = huepi.HelperZoomXYforModel(xy[0], xy[1], data.gamut);
+					}
+					var cmd = '{"transitiontime":' + data.transitionTime + ',"xy":"' + xy[0] + ',' + xy[1] + '"}';
+					vis.setValue(cmd_id, cmd);
+                });
+
+                var onChange = function () {
+                    redraw();
+                };
+
+                vis.states.bind(xy_id    + '.val', onChange);
+            }
+        },
+        hueindicatorxy: function (el, data) {
+            data = data._data ? JSON.parse(JSON.stringify(data._data)) : data;
+            data.gamut = typeof data.gamut === 'string' ? data.gamut : 'default';
+            var $this = $(el);
+
+            if (data['xy-oid']       && data['xy-oid']      !== 'nothing_selected') {
+                var xy_id    = data['xy-oid'];
+
+                var onChange = function () {
+                    var xyGet = vis.states[xy_id + '.val'] || '0.5,0.5';
+                    if (typeof xyGet !== 'string') xyGet = '0.5,0.5';
+                    xyGet = xyGet.split(',');
+                    var rgb = huepi.HelperXYtoRGBforModel(xyGet[0], xyGet[1], 1, data.gamut);
+                    $this.css("background-color", huepi.HelperRGBToHEX(rgb));
+                };
+
+                vis.states.bind(xy_id    + '.val', onChange);
+                onChange();
+            }
+        },
+        huepickerct: function (el, data) {
+            data = data._data ? JSON.parse(JSON.stringify(data._data)) : data;
+            data.transitionTime = parseInt(data.transitionTime) || 0;
+            var ctMin = 2000;
+            var ctMax = 6500;
+
+            var $this = $(el);
+
+            //build canvas
+            var canvas = document.createElement('canvas');
+            var img = document.createElement("img");
+            canvas.appendChild(img);
+            function redraw() {
+                canvas.width = $this.width();
+                canvas.height = $this.height();
+                var ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#FFFFFF";
+                ctx.fillRect(0, 0, canvas.width, canvas.height); // Need to Fill Canvas otherwise its unable to be modified...
+                var XYImagedata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                for (var x = 0; x < canvas.width; x++) { // Every Pixel on ScanLine
+                    var ctColor = huepi.HelperColortemperaturetoRGB(ctMin + (x / canvas.width * (ctMax - ctMin)));
+                    for (var y = 0; y < canvas.height; y++) { // Every ScanLine
+                        var Index = (x + y * canvas.width) * 4; // Index of Pixel
+						XYImagedata.data[Index] = ctColor.Red * 255;
+						XYImagedata.data[Index + 1] = ctColor.Green * 255;
+						XYImagedata.data[Index + 2] = ctColor.Blue * 255;
+                    }
+                }
+                ctx.putImageData(XYImagedata, 0, 0);
+                img.src = canvas.toDataURL("image/png");
+                var ctGet = parseInt(vis.states[ct_id + '.val']) || 153;
+                ctGet = Math.max(2000, Math.min(6500, Math.round(Math.pow(10,6)/ctGet)));
+                ctGet = canvas.width / ((ctMax-ctMin) / (ctGet-ctMin));
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#000000';
+                ctx.moveTo(ctGet, 0);
+                ctx.lineTo(ctGet, canvas.height);
+                ctx.stroke();
+                $this.html(canvas);
+            }
+            $this.parent().parent().resize(function() {
+                redraw();
+            });
+            $this.show(function() {
+                redraw();
+            });
+
+            if (data['command-oid']  && data['command-oid'] !== 'nothing_selected' &&
+                data['ct-oid']       && data['ct-oid']      !== 'nothing_selected') {
+                var cmd_id   = data['command-oid'];
+                var ct_id    = data['ct-oid'];
+
+                $this.click(function (e) {
+                    var ct = e.offsetX / canvas.width;
+                    ct = Math.round(ctMin + (ctMax-ctMin) * ct);
+                    ct = Math.max(153, Math.min(500, Math.round(Math.pow(10,6)/ct)));
+                    var cmd = '{"transitiontime":' + data.transitionTime + ',"ct":"' + ct + '"}';
+                    vis.setValue(cmd_id, cmd);
+                });
+
+                var onChange = function () {
+                    redraw();
+                };
+
+                vis.states.bind(ct_id    + '.val', onChange);
+            }
+        },
+        hueindicatorct: function (el, data) {
+            data = data._data ? JSON.parse(JSON.stringify(data._data)) : data;
+            var $this = $(el);
+
+            if (data['ct-oid']       && data['ct-oid']      !== 'nothing_selected') {
+                var ct_id    = data['ct-oid'];
+
+                var onChange = function () {
+                    var ctGet = parseInt(vis.states[ct_id + '.val']) || 153;
+                    ctGet = Math.max(2000, Math.min(6500, Math.round(Math.pow(10,6)/ctGet)));
+                    var rgb = huepi.HelperColortemperaturetoRGB(ctGet);
+                    $this.css("background-color", huepi.HelperRGBToHEX(rgb));
+                };
+
+                vis.states.bind(ct_id    + '.val', onChange);
+                onChange();
+            }
         }
     };
+
     if (vis.editMode) {
         vis.binds.colorpicker.changedHUE = function (widgetID, view, newId, fields) {
             var cmd     = vis.objects[newId];
             var changed = [];
 
             // If it is real object and state
-            if (cmd && cmd.common && cmd.type == 'state') {
-                var light   = vis.objects[newId.split('.', 4).join('.')];
-                var xy      = vis.objects[newId.split('.', 4).join('.') + '.xy'];
-                var level   = vis.objects[newId.split('.', 4).join('.') + '.level'];
+            if (cmd && cmd.common && cmd.type === 'state') {
+                var light   = vis.objects[newId.split('.').slice(0,-1).join('.')];
+                var xy      = vis.objects[newId.split('.').slice(0,-1).join('.') + '.xy'];
+                var level   = vis.objects[newId.split('.').slice(0,-1).join('.') + '.level'];
 
                 if (xy && xy.type === 'state' && !vis.views[view].widgets[widgetID].data['xy-oid']) {
                     changed.push('xy-oid');
-                    vis.views[view].widgets[widgetID].data['xy-oid'] = newId.split('.', 4).join('.') + '.xy';
-                    vis.widgets[widgetID].data['xy-oid'] = newId.split('.', 4).join('.')+'.xy';
+                    vis.views[view].widgets[widgetID].data['xy-oid'] = newId.split('.').slice(0,-1).join('.') + '.xy';
+                    vis.widgets[widgetID].data['xy-oid'] = newId.split('.').slice(0,-1).join('.') + '.xy';
                 }
                 if (level && level.type === 'state' && !vis.views[view].widgets[widgetID].data['level-oid']) {
                     changed.push('level-oid');
-                    vis.views[view].widgets[widgetID].data['level-oid'] = newId.split('.', 4).join('.') + '.level';
-                    vis.widgets[widgetID].data['level-oid'] = newId.split('.', 4).join('.') + '.level';
+                    vis.views[view].widgets[widgetID].data['level-oid'] = newId.split('.').slice(0,-1).join('.') + '.level';
+                    vis.widgets[widgetID].data['level-oid'] = newId.split('.').slice(0,-1).join('.') + '.level';
+                }
+                if (light.native.modelid !== undefined && !vis.views[view].widgets[widgetID].data.gamut) {
+                    changed.push('gamut');
+                    vis.views[view].widgets[widgetID].data.gamut = light.native.modelid;
+                    vis.widgets[widgetID].data.gamut = light.native.modelid;
+                }
+            }
+            return changed;
+        };
+        vis.binds.colorpicker.changedHUEPickerXY = function (widgetID, view, newId, fields) {
+            var cmd     = vis.objects[newId];
+            var changed = [];
+
+            // If it is real object and state
+            if (cmd && cmd.common && cmd.type === 'state') {
+                var light   = vis.objects[newId.split('.').slice(0,-1).join('.')];
+                var xy      = vis.objects[newId.split('.').slice(0,-1).join('.') + '.xy'];
+
+                if (xy && xy.type === 'state' && !vis.views[view].widgets[widgetID].data['xy-oid']) {
+                    changed.push('xy-oid');
+                    vis.views[view].widgets[widgetID].data['xy-oid'] = newId.split('.').slice(0,-1).join('.') + '.xy';
+                    vis.widgets[widgetID].data['xy-oid'] = newId.split('.').slice(0,-1).join('.') + '.xy';
+                }
+                if (light.native.modelid !== undefined && !vis.views[view].widgets[widgetID].data.gamut) {
+                    changed.push('gamut');
+                    vis.views[view].widgets[widgetID].data.gamut = light.native.modelid;
+                    vis.widgets[widgetID].data.gamut = light.native.modelid;
+                }
+            }
+            return changed;
+        };
+        vis.binds.colorpicker.changedHUEPickerCT = function (widgetID, view, newId, fields) {
+            var cmd     = vis.objects[newId];
+            var changed = [];
+
+            // If it is real object and state
+            if (cmd && cmd.common && cmd.type === 'state') {
+                var light   = vis.objects[newId.split('.').slice(0,-1).join('.')];
+                var ct      = vis.objects[newId.split('.').slice(0,-1).join('.') + '.ct'];
+
+                if (ct && ct.type === 'state' && !vis.views[view].widgets[widgetID].data['ct-oid']) {
+                    changed.push('ct-oid');
+                    vis.views[view].widgets[widgetID].data['ct-oid'] = newId.split('.').slice(0,-1).join('.') + '.ct';
+                    vis.widgets[widgetID].data['ct-oid'] = newId.split('.').slice(0,-1).join('.') + '.ct';
+                }
+            }
+            return changed;
+        };
+        vis.binds.colorpicker.changedHUEIndicatorXY = function (widgetID, view, newId, fields) {
+            var xy     = vis.objects[newId];
+            var changed = [];
+
+            // If it is real object and state
+            if (xy && xy.common && xy.type === 'state') {
+                var light   = vis.objects[newId.split('.').slice(0,-1).join('.')];
+
+                if (xy && xy.type === 'state' && !vis.views[view].widgets[widgetID].data['xy-oid']) {
+                    changed.push('xy-oid');
+                    vis.views[view].widgets[widgetID].data['xy-oid'] = newId.split('.').slice(0,-1).join('.') + '.xy';
+                    vis.widgets[widgetID].data['xy-oid'] = newId.split('.').slice(0,-1).join('.') + '.xy';
                 }
                 if (light.native.modelid !== undefined && !vis.views[view].widgets[widgetID].data.gamut) {
                     changed.push('gamut');
@@ -685,6 +943,70 @@
     <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body" style="display:table;">
             <div class="ui-button ui-state-default ui-corner-all" style="width:100%;height:100%;display:table-cell;" <%= (el) -> vis.binds.colorpicker.jscolorcie(el, data) %> ></div>
+        </div>
+    </div>
+</script>
+
+<script id="tplHUEPickerXY"
+		type="text/ejs"
+		class="vis-tpl"
+		data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplHUEPickerXY.png"></img>'
+		data-vis-set="colorpicker"
+		data-vis-type="ctrl,color"
+		data-vis-name="Philips HUE XY-Picker"
+		data-vis-attrs="command-oid/id/changedHUEPickerXY;xy-oid/id;gamut;transitionTime[4]/number,0,30000,1;"
+>
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+        <div class="vis-widget-body">
+            <div class="hue-canvas" style="width:100%;height:100%;cursor:crosshair;" <%= (el) -> vis.binds.colorpicker.huepickerxy(el, data) %> ></div>
+        </div>
+    </div>
+</script>
+
+<script id="tplHUEIndicatorXY"
+		type="text/ejs"
+		class="vis-tpl"
+		data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplHUEIndicatorXY.png"></img>'
+		data-vis-set="colorpicker"
+		data-vis-type="value,color"
+		data-vis-name="Philips HUE XY-Indicator"
+		data-vis-attrs="xy-oid/id/changedHUEIndicatorXY;gamut;"
+>
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+        <div class="vis-widget-body">
+            <div class="hue-indicator-xy" style="width:100%;height:100%;" <%= (el) -> vis.binds.colorpicker.hueindicatorxy(el, data) %> ></div>
+        </div>
+    </div>
+</script>
+
+<script id="tplHUEPickerCT"
+		type="text/ejs"
+		class="vis-tpl"
+		data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplHUEPickerCT.png"></img>'
+		data-vis-set="colorpicker"
+		data-vis-type="ctrl,color"
+		data-vis-name="Philips HUE CT-Picker"
+		data-vis-attrs="command-oid/id/changedHUEPickerCT;ct-oid/id;transitionTime[4]/number,0,30000,1;"
+>
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+        <div class="vis-widget-body">
+            <div class="hue-canvas-ct" style="width:100%;height:100%;cursor:crosshair;" <%= (el) -> vis.binds.colorpicker.huepickerct(el, data) %> ></div>
+        </div>
+    </div>
+</script>
+
+<script id="tplHUEIndicatorCT"
+		type="text/ejs"
+		class="vis-tpl"
+		data-vis-prev='<img src="widgets/colorpicker/img/Prev_tplHUEIndicatorCT.png"></img>'
+		data-vis-set="colorpicker"
+		data-vis-type="value,color"
+		data-vis-name="Philips HUE CT-Indicator"
+		data-vis-attrs="ct-oid/id;"
+>
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+        <div class="vis-widget-body">
+            <div class="hue-indicator-xy" style="width:100%;height:100%;" <%= (el) -> vis.binds.colorpicker.hueindicatorct(el, data) %> ></div>
         </div>
     </div>
 </script>
