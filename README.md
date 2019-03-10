@@ -2,7 +2,7 @@
 ioBroker.vis-colorpicker
 ============
 
-[![NPM version](http://img.shields.io/npm/v/iobroker.vis-colorpicker.svg)](https://www.npmjs.com/package/iobroker.vis-colorpicker)
+![Number of Installations](http://iobroker.live/badges/vis-colorpicker-installed.svg) ![Number of Installations](http://iobroker.live/badges/vis-colorpicker-stable.svg) [![NPM version](http://img.shields.io/npm/v/iobroker.vis-colorpicker.svg)](https://www.npmjs.com/package/iobroker.vis-colorpicker)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.vis-colorpicker.svg)](https://www.npmjs.com/package/iobroker.vis-colorpicker)
 
 [![NPM](https://nodei.co/npm/iobroker.vis-colorpicker.png?downloads=true)](https://nodei.co/npm/iobroker.vis-colorpicker/)
