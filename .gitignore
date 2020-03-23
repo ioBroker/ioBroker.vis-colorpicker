@@ -1,3 +1,5 @@
 .idea
 /node_modules
 .git
+/iob_npm.done
+/package-lock.json
