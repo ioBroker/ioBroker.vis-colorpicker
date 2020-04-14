@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "vis-colorpicker",
-        "version": "1.1.1",
+        "version": "1.2.0",
         "news": {
+            "1.2.0": {
+                "en": "Corrected html structure",
+                "de": "HTML-Struktur korrigiert",
+                "ru": "Исправленная структура HTML",
+                "pt": "Estrutura html corrigida",
+                "nl": "Gecorrigeerde html-structuur",
+                "fr": "Structure html corrigée",
+                "it": "Struttura html corretta",
+                "es": "Estructura html corregida",
+                "pl": "Poprawiona struktura HTML",
+                "zh-cn": "更正的html结构"
+            },
             "1.1.1": {
                 "en": "add new hue bulbs and fix gamut",
                 "de": "Neue hue-Typen und korrigiere gamut",
@@ -23,7 +35,14 @@
         "desc": {
             "en": "Color picker Widgets for ioBroker.vis",
             "de": "Color picker Widgets für ioBroker.vis",
-            "ru": "Выбор цвета Widgets для ioBroker.vis"
+            "ru": "Выбор цвета Widgets для ioBroker.vis",
+            "pt": "Seletor de cores Widgets para ioBroker.vis",
+            "nl": "Kleurkiezer Widgets voor ioBroker.vis",
+            "fr": "Widgets de sélection de couleur pour ioBroker.vis",
+            "it": "Widget Selettore colore per ioBroker.vis",
+            "es": "Selectores de color Widgets para ioBroker.vis",
+            "pl": "Widżety wyboru kolorów dla ioBroker.vis",
+            "zh-cn": "ioBroker.vis的颜色选择器小部件"
         },
         "platform": "Javascript/Node.js",
         "loglevel": "info",
