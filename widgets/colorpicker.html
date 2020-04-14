@@ -1025,9 +1025,12 @@
         >
     <div class="vis-widget <%== this.data.attr('class') %>" style="width: 96px; height: 50px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body" style="display: inline-block">
-            <table style="border: 0; border-spacing: 0; width: 100%; height: 100%" class="vis-no-spaces"><tr class="vis-no-spaces">
-                <td class="vis-no-spaces"><%== this.data.attr('title') %></td>
-                <td class="vis-no-spaces"><input style="width: calc(100% - 5px); height: 100%" readonly <%= (el) -> vis.binds.colorpicker.jscolor(el, this.data) %> /></td>
+            <table style="border: 0; border-spacing: 0; width: 100%; height: 100%" class="vis-no-spaces">
+            	<tr class="vis-no-spaces">
+					<td class="vis-no-spaces"><%== this.data.attr('title') %></td>
+					<td class="vis-no-spaces"><input style="width: calc(100% - 5px); height: 100%" readonly <%= (el) -> vis.binds.colorpicker.jscolor(el, this.data) %> /></td>
+				</tr>
+			</table>
         </div>
     </div>
 </script>
