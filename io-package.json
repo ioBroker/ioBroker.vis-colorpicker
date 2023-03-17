@@ -1,87 +1,100 @@
 {
-    "common": {
-        "name": "vis-colorpicker",
-        "version": "2.0.0",
-        "news": {
-            "1.2.0": {
-                "en": "Corrected html structure",
-                "de": "HTML-Struktur korrigiert",
-                "ru": "Исправленная структура HTML",
-                "pt": "Estrutura html corrigida",
-                "nl": "Gecorrigeerde html-structuur",
-                "fr": "Structure html corrigée",
-                "it": "Struttura html corretta",
-                "es": "Estructura html corregida",
-                "pl": "Poprawiona struktura HTML",
-                "zh-cn": "更正的html结构"
-            },
-            "1.1.1": {
-                "en": "add new hue bulbs and fix gamut",
-                "de": "Neue hue-Typen und korrigiere gamut",
-                "ru": "Добавлены новые типы ламп, исправлен gamut"
-            },
-            "1.1.0": {
-                "en": "add homematic colorpicker",
-                "de": "add homematic colorpicker",
-                "ru": "add homematic colorpicker"
-            },
-            "1.0.2": {
-                "en": "Fix Philips HUE Colorpicker",
-                "de": "Fix Philips HUE Colorpicker",
-                "ru": "Fix Philips HUE Colorpicker"
-            }
-        },
-        "title": "ioBroker Visualisation - color picker style Widgets",
-        "titleLang": {
-            "en": "Color picker Widgets"
-        },
-        "desc": {
-            "en": "Color picker Widgets for ioBroker.vis",
-            "de": "Color picker Widgets für ioBroker.vis",
-            "ru": "Выбор цвета Widgets для ioBroker.vis",
-            "pt": "Seletor de cores Widgets para ioBroker.vis",
-            "nl": "Kleurkiezer Widgets voor ioBroker.vis",
-            "fr": "Widgets de sélection de couleur pour ioBroker.vis",
-            "it": "Widget Selettore colore per ioBroker.vis",
-            "es": "Selectores de color Widgets para ioBroker.vis",
-            "pl": "Widżety wyboru kolorów dla ioBroker.vis",
-            "zh-cn": "ioBroker.vis的颜色选择器小部件"
-        },
-        "platform": "Javascript/Node.js",
-        "loglevel": "info",
-        "icon": "colorpicker.png",
-        "enabled": true,
-        "mode": "once",
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.vis-colorpicker/master/admin/colorpicker.png",
-        "keywords": [
-            "color picker",
-            "vis",
-            "GUI",
-            "graphical",
-            "scada"
-        ],
-        "readme": "https://github.com/ioBroker/ioBroker.vis-colorpicker/blob/master/README.md",
-        "authors": [
-            "bluefox <dogafox@gmail.com>",
-            "pmant <patrickmo@gmx.de>",
-            "hobbyquaker <hq@ccu.io>"
-        ],
-        "license": "MIT",
-        "dependencies": [
-            "vis"
-        ],
-        "onlyWWW": true,
-        "singleton": true,
-        "type": "visualization-widgets",
-        "noConfig": true,
-        "adminUI": {
-            "config": "none"
-        },
-        "restartAdapters": [
-            "vis",
-            "vis-2-beta"
-        ]
+  "common": {
+    "name": "vis-colorpicker",
+    "version": "2.0.1",
+    "news": {
+      "2.0.1": {
+        "en": "Made it works with vis-2.0",
+        "de": "Es funktioniert mit vis-2.0",
+        "ru": "Сделано с vis-2.0",
+        "pt": "Feito funciona com vis-2.0",
+        "nl": "Het werkte met vis-2",
+        "fr": "Il fonctionne avec vis-2.0",
+        "it": "Fatto funziona con vis-2.0",
+        "es": "Lo hizo funcionar con vis-2.0",
+        "pl": "Wykonano ją z wiszą-2.0",
+        "uk": "Виготовлено його роботи з вісом-2.0",
+        "zh-cn": "马约尔与2.0号工作"
+      },
+      "1.2.0": {
+        "en": "Corrected html structure",
+        "de": "HTML-Struktur korrigiert",
+        "ru": "Исправленная структура HTML",
+        "pt": "Estrutura html corrigida",
+        "nl": "Gecorrigeerde html-structuur",
+        "fr": "Structure html corrigée",
+        "it": "Struttura html corretta",
+        "es": "Estructura html corregida",
+        "pl": "Poprawiona struktura HTML",
+        "zh-cn": "更正的html结构"
+      },
+      "1.1.1": {
+        "en": "add new hue bulbs and fix gamut",
+        "de": "Neue hue-Typen und korrigiere gamut",
+        "ru": "Добавлены новые типы ламп, исправлен gamut"
+      },
+      "1.1.0": {
+        "en": "add homematic colorpicker",
+        "de": "add homematic colorpicker",
+        "ru": "add homematic colorpicker"
+      },
+      "1.0.2": {
+        "en": "Fix Philips HUE Colorpicker",
+        "de": "Fix Philips HUE Colorpicker",
+        "ru": "Fix Philips HUE Colorpicker"
+      }
     },
-    "native": {},
-    "instanceObjects": []
+    "title": "ioBroker Visualisation - color picker style Widgets",
+    "titleLang": {
+      "en": "Color picker Widgets"
+    },
+    "desc": {
+      "en": "Color picker Widgets for ioBroker.vis",
+      "de": "Color picker Widgets für ioBroker.vis",
+      "ru": "Выбор цвета Widgets для ioBroker.vis",
+      "pt": "Seletor de cores Widgets para ioBroker.vis",
+      "nl": "Kleurkiezer Widgets voor ioBroker.vis",
+      "fr": "Widgets de sélection de couleur pour ioBroker.vis",
+      "it": "Widget Selettore colore per ioBroker.vis",
+      "es": "Selectores de color Widgets para ioBroker.vis",
+      "pl": "Widżety wyboru kolorów dla ioBroker.vis",
+      "zh-cn": "ioBroker.vis的颜色选择器小部件"
+    },
+    "platform": "Javascript/Node.js",
+    "loglevel": "info",
+    "icon": "colorpicker.png",
+    "enabled": true,
+    "mode": "once",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.vis-colorpicker/master/admin/colorpicker.png",
+    "keywords": [
+      "color picker",
+      "vis",
+      "GUI",
+      "graphical",
+      "scada"
+    ],
+    "readme": "https://github.com/ioBroker/ioBroker.vis-colorpicker/blob/master/README.md",
+    "authors": [
+      "bluefox <dogafox@gmail.com>",
+      "pmant <patrickmo@gmx.de>",
+      "hobbyquaker <hq@ccu.io>"
+    ],
+    "license": "MIT",
+    "dependencies": [
+      "vis"
+    ],
+    "onlyWWW": true,
+    "singleton": true,
+    "type": "visualization-widgets",
+    "noConfig": true,
+    "adminUI": {
+      "config": "none"
+    },
+    "restartAdapters": [
+      "vis",
+      "vis-2-beta"
+    ]
+  },
+  "native": {},
+  "instanceObjects": []
 }
