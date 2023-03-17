@@ -3,19 +3,6 @@
     "name": "vis-colorpicker",
     "version": "2.0.2",
     "news": {
-      "2.0.2": {
-        "en": "Made it work with vis-2.0",
-        "de": "Es funktioniert mit vis-2.0",
-        "ru": "Сделано с vis-2.0",
-        "pt": "Fez com que funcionasse com vis-2.0",
-        "nl": "Het werkte met vis-2",
-        "fr": "Il a travaillé avec vis-2.0",
-        "it": "Fatto funzionare con vis-2.0",
-        "es": "Lo hizo funcionar con vis-2.0",
-        "pl": "Uzyskał ją z wiszą-2.0",
-        "uk": "Виготовлена робота з ві-2.0",
-        "zh-cn": "马约恩岛与2.0工作"
-      },
       "1.2.0": {
         "en": "Corrected html structure",
         "de": "HTML-Struktur korrigiert",

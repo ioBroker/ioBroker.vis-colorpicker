@@ -1,7 +1,7 @@
 <!--
     ioBroker.vis colorpicker Widget-Set
 
-    version: "2.0.2"
+    version: "2.0.3"
 
     Copyright 2013-2023 hobbyquaker https://github.com/hobbyquaker, bluefox https://github.com/GermanBluefox
 -->
@@ -48,7 +48,7 @@
     }
 
     vis.binds.colorpicker = {
-        version: "2.0.2",
+        version: "2.0.3",
         loadedJS: {},
         loadJS: function (url, cb) {
             if (vis.binds.colorpicker.loadedJS[url]) {
@@ -64,7 +64,7 @@
             let scriptEle = document.createElement('script');
 
             scriptEle.setAttribute('src', url);
-            scriptEle.setAttribute('type', "text/javascript");
+            scriptEle.setAttribute('type', 'text/javascript');
 
             document.body.appendChild(scriptEle);
 
@@ -144,7 +144,8 @@
 
                 if (data['hue-oid'] && data['hue-oid'] !== 'nothing_selected' &&
                     data['sat-oid'] && data['sat-oid'] !== 'nothing_selected' &&
-                    data['bri-oid'] && data['bri-oid'] !== 'nothing_selected') {
+                    data['bri-oid'] && data['bri-oid'] !== 'nothing_selected'
+                ) {
                     var hue = data['hue-oid'];
                     var sat = data['sat-oid'];
                     var bri = data['bri-oid'];
@@ -176,7 +177,8 @@
                 }
                 if (data['red-oid'] && data['red-oid'] !== 'nothing_selected' &&
                     data['green-oid'] && data['green-oid'] !== 'nothing_selected' &&
-                    data['blue-oid'] && data['blue-oid'] !== 'nothing_selected') {
+                    data['blue-oid'] && data['blue-oid'] !== 'nothing_selected'
+                ) {
                     var r = data['red-oid'];
                     var g = data['green-oid'];
                     var b = data['blue-oid'];
@@ -944,7 +946,7 @@
         data-vis-attrs1="group.hue;hue-oid/id;sat-oid/id;bri-oid/id;"
         data-vis-attrs2="group.extra;factor[1];decimal[0]/slider,0,5,1;"
 >
-    <div class="vis-widget <%== this.data.attr('class') %>" style="" id="<%= this.data.attr('wid') %>">
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 50px; height: 32px" id="<%= this.data.attr('wid') %>" data-vis-resizable='{"disabled":true}'>
         <div class="vis-widget-body">
             <input style="width: 100%; height: 100%" <%= (el) -> vis.binds.colorpicker.spectrum(el, data) %> />
         </div>
@@ -960,8 +962,9 @@
         data-vis-type="ctrl,color"
         data-vis-name="Homematic spectrum"
         data-vis-attrs="color-oid/id;"
+        data-vis-resize-locked="true"
 >
-    <div class="vis-widget <%== this.data.attr('class') %>" style="" id="<%= this.data.attr('wid') %>">
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 50px; height: 32px"  id="<%= this.data.attr('wid') %>" data-vis-resizable='{"disabled":true}'>
         <div class="vis-widget-body">
             <input style="width: 100%; height: 100%" <%= (el) -> vis.binds.colorpicker.spectrumHomematic(el, data) %> />
         </div>
@@ -981,7 +984,7 @@
         data-vis-attrs1="group.hue;hue-oid/id;sat-oid/id;bri-oid/id;"
         data-vis-attrs2="group.extra;factor[1];decimal[0]/slider,0,5,1;"
 >
-    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 196px; height: 196px;" id="<%= this.data.attr('wid') %>">
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 196px; height: 196px;" id="<%= this.data.attr('wid') %>" data-vis-resizable='{"disabled":true}'>
         <div class="vis-widget-body">
             <div></div>
             <input <%= (el) -> vis.binds.colorpicker.farbtastic(el, data) %> />
@@ -1001,7 +1004,7 @@
         data-vis-attrs0="group.rgb;red-oid/id;green-oid/id;blue-oid/id;divisor[1];decimal[0]/slider,0,5,1;rgb-oid/id;"
         data-vis-attrs1="group.hue;hue-oid/id;sat-oid/id;bri-oid/id;"
 >
-    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 100px; height: 100px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body" style="display:table;">
             <div class="ui-button ui-state-default ui-corner-all" style="width:100%;height:100%;display:table-cell;" <%= (el) -> vis.binds.colorpicker.jscolorcie(el, data) %> ></div>
         </div>
@@ -1018,7 +1021,7 @@
         data-vis-name="Philips HUE XY-Picker"
         data-vis-attrs="command-oid/id/changedHUEPickerXY;xy-oid/id;gamut;transitionTime[4]/number,0,30000,1;"
 >
-    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 100px; height: 100px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
             <div class="hue-canvas" style="width:100%;height:100%;cursor:crosshair;" <%= (el) -> vis.binds.colorpicker.huepickerxy(el, data) %> ></div>
         </div>
@@ -1035,7 +1038,7 @@
         data-vis-name="Philips HUE XY-Indicator"
         data-vis-attrs="xy-oid/id/changedHUEIndicatorXY;gamut;"
 >
-    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 100px; height: 100px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
             <div class="hue-indicator-xy" style="width:100%;height:100%;" <%= (el) -> vis.binds.colorpicker.hueindicatorxy(el, data) %> ></div>
         </div>
@@ -1052,7 +1055,7 @@
         data-vis-name="Philips HUE CT-Picker"
         data-vis-attrs="command-oid/id/changedHUEPickerCT;ct-oid/id;transitionTime[4]/number,0,30000,1;"
 >
-    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 100px; height: 100px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
             <div class="hue-canvas-ct" style="width:100%;height:100%;cursor:crosshair;" <%= (el) -> vis.binds.colorpicker.huepickerct(el, data) %> ></div>
         </div>
@@ -1070,7 +1073,7 @@
         data-vis-attrs="ct-oid/id;"
         data-vis-2-ignore="true"
 >
-    <div class="vis-widget <%== this.data.attr('class') %>" style="width:100px;height:100px;" id="<%= this.data.attr('wid') %>">
+    <div class="vis-widget <%== this.data.attr('class') %>" style="width: 100px; height: 100px;" id="<%= this.data.attr('wid') %>">
         <div class="vis-widget-body">
             <div class="hue-indicator-xy" style="width:100%;height:100%;" <%= (el) -> vis.binds.colorpicker.hueindicatorct(el, data) %> ></div>
         </div>
