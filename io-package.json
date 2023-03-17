@@ -32,6 +32,9 @@
             }
         },
         "title": "ioBroker Visualisation - color picker style Widgets",
+        "titleLang": {
+            "en": "Color picker Widgets"
+        },
         "desc": {
             "en": "Color picker Widgets for ioBroker.vis",
             "de": "Color picker Widgets für ioBroker.vis",
@@ -63,7 +66,6 @@
             "pmant <patrickmo@gmx.de>",
             "hobbyquaker <hq@ccu.io>"
         ],
-        "localLink": "%web_protocol%://%ip%:%web_port%/vis/edit.html",
         "license": "MIT",
         "dependencies": [
             "vis"
@@ -72,8 +74,12 @@
         "singleton": true,
         "type": "visualization-widgets",
         "noConfig": true,
+        "adminUI": {
+            "config": "none"
+        },
         "restartAdapters": [
-            "vis"
+            "vis",
+            "vis-2-beta"
         ]
     },
     "native": {},

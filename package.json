@@ -29,22 +29,36 @@
     "web interface",
     "home automation",
     "SCADA",
-    "colorpicker GUI"
+    "colorpicker"
   ],
   "devDependencies": {
-    "gulp": "^4.0.2",
-    "mocha": "^7.1.1",
-    "chai": "^4.2.0"
+    "@alcalzone/release-script": "^3.5.9",
+    "@alcalzone/release-script-plugin-iobroker": "^3.5.9",
+    "@alcalzone/release-script-plugin-license": "^3.5.9",
+    "mocha": "^10.2.0",
+    "chai": "^4.3.7",
+    "@iobroker/legacy-testing": "^0.1.1"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.vis-colorpicker/issues"
   },
   "main": "widgets/colorpicker.html",
+  "files": [
+    "widgets/",
+    "admin/",
+    "img/",
+    "io-package.json",
+    "LICENSE"
+  ],
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --exit"
+    "test": "node node_modules/mocha/bin/mocha --exit",
+    "release": "release-script",
+    "release-patch": "release-script patch --yes",
+    "release-minor": "release-script minor --yes",
+    "release-major": "release-script major --yes"
   },
   "license": "MIT",
   "dependencies": {
-    "@iobroker/adapter-core": "^2.2.1"
+    "@iobroker/adapter-core": "^2.6.7"
   }
 }
