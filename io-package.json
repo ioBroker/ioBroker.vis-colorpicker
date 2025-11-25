@@ -80,7 +80,10 @@
       "pmant <patrickmo@gmx.de>",
       "hobbyquaker <hq@ccu.io>"
     ],
-    "license": "MIT",
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
     "dependencies": [
       "vis"
     ],
