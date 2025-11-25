@@ -1,5 +1,3 @@
 {
-    "plugins": ["iobroker", "license"],
-    "exec": {
-    }
+    "plugins": ["iobroker", "license"]
 }
