@@ -17,35 +17,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 .farbtastic {
-  position: relative;
+    position: relative;
 }
 .farbtastic * {
-  position: absolute;
-  cursor: crosshair;
+    position: absolute;
+    cursor: crosshair;
 }
-.farbtastic, .farbtastic .wheel {
-  width: 195px;
-  height: 195px;
+.farbtastic,
+.farbtastic .wheel {
+    width: 195px;
+    height: 195px;
 }
-.farbtastic .color, .farbtastic .overlay {
-  top: 47px;
-  left: 47px;
-  width: 101px;
-  height: 101px;
+.farbtastic .color,
+.farbtastic .overlay {
+    top: 47px;
+    left: 47px;
+    width: 101px;
+    height: 101px;
 }
 .farbtastic .wheel {
-  background: url(../img/wheel.png) no-repeat;
-  width: 195px;
-  height: 195px;
+    background: url(../img/wheel.png) no-repeat;
+    width: 195px;
+    height: 195px;
 }
 .farbtastic .overlay {
-  background: url(../img/mask.png) no-repeat;
+    background: url(../img/mask.png) no-repeat;
 }
 .farbtastic .marker {
-  width: 17px;
-  height: 17px;
-  margin: -8px 0 0 -8px;
-  overflow: hidden; 
-  background: url(../img/marker.png) no-repeat;
+    width: 17px;
+    height: 17px;
+    margin: -8px 0 0 -8px;
+    overflow: hidden;
+    background: url(../img/marker.png) no-repeat;
 }
-
