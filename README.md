@@ -14,7 +14,7 @@ Color selector widgets for `ioBroker.vis`
     ### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 2.1.0 (2025-11-25)
 * (oweitman) loaded an additional javascript file for the widget jscolorcie to fix
 
 ### 2.0.3 (2023-03-17)

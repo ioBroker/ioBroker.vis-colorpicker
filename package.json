@@ -1,7 +1,7 @@
 {
   "name": "iobroker.vis-colorpicker",
   "description": "colorpicker Widgets for ioBroker.vis",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "author": {
     "name": "bluefox",
     "email": "dogaofx@gmail.com"
@@ -31,9 +31,9 @@
     "SCADA",
     "colorpicker"
   ],
-    "dependencies": {
-        "@iobroker/adapter-core": "^3.3.2"
-    },
+  "dependencies": {
+    "@iobroker/adapter-core": "^3.3.2"
+  },
   "devDependencies": {
     "@iobroker/eslint-config": "^2.2.0",
     "@alcalzone/release-script": "^5.0.0",

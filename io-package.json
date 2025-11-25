@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "vis-colorpicker",
-    "version": "2.0.3",
+    "version": "2.1.0",
     "news": {
+      "2.1.0": {
+        "en": "loaded an additional javascript file for the widget jscolorcie to fix",
+        "de": "geladen eine zusätzliche javascript-datei für das widget jscolorcie zu beheben",
+        "ru": "загрузил дополнительный файл javascript для исправления виджета jscolorcie",
+        "pt": "carregado um arquivo javascript adicional para o widget jscolorcie para corrigir",
+        "nl": "geladen een extra javascript bestand voor de widget jscolorcie te repareren",
+        "fr": "chargé un fichier javascript supplémentaire pour le widget jscolorcie à corriger",
+        "it": "caricato un altro file javascript per il widget jscolorcie per risolvere",
+        "es": "cargado un archivo javascript adicional para el widget jscolorcie para fijar",
+        "pl": "załadowany dodatkowy plik javascript dla widget jscolorcie naprawić",
+        "uk": "завантажено додатковий файл для jscolorcie віджету для фіксації",
+        "zh-cn": "为部件 jscolorcie 装入额外的javascript 文件以修正"
+      },
       "2.0.3": {
         "en": "Made it work with vis-2.0",
         "de": "Es funktioniert mit vis-2.0",
