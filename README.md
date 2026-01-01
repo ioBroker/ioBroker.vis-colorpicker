@@ -53,7 +53,7 @@ Color selector widgets for `ioBroker.vis`
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2013-2025 Bluefox https://github.com/GermanBluefox,
+Copyright (c) 2013-2026 Bluefox https://github.com/GermanBluefox,
               2013-2014 hobbyquaker https://github.com/hobbyquaker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
