@@ -1,29 +1,28 @@
-# Dependabot will run on day 27 of each month at 01:26 (Europe/Berlin timezone)
 version: 2
 updates:
-
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: npm
+    directory: '/'
     schedule:
-      interval: "cron"
-      timezone: "Europe/Berlin"
-      cronjob: "26 1 27 * *"
-    open-pull-requests-limit: 15
+      interval: monthly
+      time: '04:00'
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 20
+    versioning-strategy: increase
 
-  - package-ecosystem: "npm"
-    directory: "/"
+  # the vis-2 widget set has its own dependencies (react, vite, module federation)
+  - package-ecosystem: npm
+    directory: '/src-widgets'
     schedule:
-      interval: "cron"
-      timezone: "Europe/Berlin"
-      cronjob: "26 1 27 * *"
-    open-pull-requests-limit: 15
-    versioning-strategy: "increase"
+      interval: monthly
+      time: '04:00'
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 20
+    versioning-strategy: increase
 
-  - package-ecosystem: "npm"
-    directory: "/src-widgets"
+  - package-ecosystem: github-actions
+    directory: '/'
     schedule:
-      interval: "cron"
-      timezone: "Europe/Berlin"
-      cronjob: "26 1 27 * *"
-    open-pull-requests-limit: 15
-    versioning-strategy: "increase"
+      interval: monthly
+      time: '04:00'
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 5

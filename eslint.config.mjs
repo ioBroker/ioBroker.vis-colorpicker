@@ -1,28 +1,36 @@
-import config from '@iobroker/eslint-config';
+import config, { reactConfig } from '@iobroker/eslint-config';
 
 export default [
     ...config,
+    ...reactConfig,
     {
         languageOptions: {
             parserOptions: {
                 projectService: {
-                    allowDefaultProject: ['*.mjs'],
+                    allowDefaultProject: ['*.js', '*.mjs'],
                 },
                 tsconfigRootDir: import.meta.dirname,
-                project: './tsconfig.json',
             },
         },
     },
     {
+        files: ['**/*.js'],
+        rules: {
+            '@typescript-eslint/no-require-imports': 'off',
+        },
+    },
+    {
+        // `widgets/` holds the hand-maintained vis-1 widget set plus the generated vis-2 bundle
         ignores: [
-            'src-admin/**/*',
-            'admin/**/*',
-            'node_modules/**/*',
+            'widgets/**/*',
             'test/**/*',
-            'build/**/*',
-            'tasks.js',
-            'tmp/**/*',
-            '.**/*',
+            'src-widgets/build/**/*',
+            'src-widgets/node_modules/**/*',
+            'src-widgets/.__mf__temp/**/*',
+            'src-widgets/vite.config.*',
+            'src-widgets/checkWidgets.mjs',
+            'src-widgets/preview/**/*',
+            'src-widgets/public/**/*',
         ],
     },
     {
@@ -30,8 +38,12 @@ export default [
         rules: {
             'jsdoc/require-jsdoc': 'off',
             'jsdoc/require-param': 'off',
-
-            '@typescript-eslint/no-require-imports': 'off',
+            'prettier/prettier': [
+                'error',
+                {
+                    endOfLine: 'auto',
+                },
+            ],
         },
     },
 ];

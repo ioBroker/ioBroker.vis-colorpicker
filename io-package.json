@@ -59,30 +59,43 @@
     },
     "title": "ioBroker Visualisation - color picker style Widgets",
     "titleLang": {
-      "en": "Color picker Widgets"
+      "en": "Color picker widgets",
+      "de": "Farbauswahl-Widgets",
+      "ru": "Виджеты выбора цвета",
+      "pt": "Widgets de seleção de cor",
+      "nl": "Kleurkiezer-widgets",
+      "fr": "Widgets de sélection de couleur",
+      "it": "Widget selettore colore",
+      "es": "Widgets de selector de color",
+      "pl": "Widżety wyboru koloru",
+      "uk": "Віджети вибору кольору",
+      "zh-cn": "颜色选择器小部件"
     },
     "desc": {
-      "en": "Color picker Widgets for ioBroker.vis",
-      "de": "Color picker Widgets für ioBroker.vis",
-      "ru": "Выбор цвета Widgets для ioBroker.vis",
-      "pt": "Seletor de cores Widgets para ioBroker.vis",
-      "nl": "Kleurkiezer Widgets voor ioBroker.vis",
-      "fr": "Widgets de sélection de couleur pour ioBroker.vis",
-      "it": "Widget Selettore colore per ioBroker.vis",
-      "es": "Selectores de color Widgets para ioBroker.vis",
-      "pl": "Widżety wyboru kolorów dla ioBroker.vis",
-      "zh-cn": "ioBroker.vis的颜色选择器小部件"
+      "en": "Color picker widgets for ioBroker.vis and ioBroker.vis-2",
+      "de": "Farbauswahl-Widgets für ioBroker.vis und ioBroker.vis-2",
+      "ru": "Виджеты выбора цвета для ioBroker.vis и ioBroker.vis-2",
+      "pt": "Widgets de seleção de cor para ioBroker.vis e ioBroker.vis-2",
+      "nl": "Kleurkiezer-widgets voor ioBroker.vis en ioBroker.vis-2",
+      "fr": "Widgets de sélection de couleur pour ioBroker.vis et ioBroker.vis-2",
+      "it": "Widget selettore colore per ioBroker.vis e ioBroker.vis-2",
+      "es": "Widgets de selector de color para ioBroker.vis e ioBroker.vis-2",
+      "pl": "Widżety wyboru koloru dla ioBroker.vis i ioBroker.vis-2",
+      "uk": "Віджети вибору кольору для ioBroker.vis та ioBroker.vis-2",
+      "zh-cn": "用于 ioBroker.vis 和 ioBroker.vis-2 的颜色选择器小部件"
     },
     "platform": "Javascript/Node.js",
     "loglevel": "info",
     "tier": 3,
     "icon": "colorpicker.png",
     "enabled": true,
-    "mode": "once",
+    "mode": "none",
     "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.vis-colorpicker/master/admin/colorpicker.png",
     "keywords": [
       "color picker",
+      "colorpicker",
       "vis",
+      "vis-2",
       "GUI",
       "graphical",
       "scada"
@@ -97,9 +110,6 @@
       "type": "free",
       "license": "MIT"
     },
-    "dependencies": [
-      "vis"
-    ],
     "onlyWWW": true,
     "singleton": true,
     "type": "visualization-widgets",
@@ -109,8 +119,111 @@
     },
     "restartAdapters": [
       "vis",
-      "vis-2-beta"
-    ]
+      "vis-2"
+    ],
+    "docs": {
+      "en": "docs/en/README.md",
+      "de": "docs/de/README.md"
+    },
+    "messages": [
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "!vis",
+            "!vis-2"
+          ]
+        },
+        "title": {
+          "en": "No vis adapter found",
+          "de": "Kein vis-Adapter gefunden",
+          "ru": "Адаптер vis не найден",
+          "pt": "Nenhum adaptador vis encontrado",
+          "nl": "Geen vis-adapter gevonden",
+          "fr": "Aucun adaptateur vis trouvé",
+          "it": "Nessun adattatore vis trovato",
+          "es": "No se encontró ningún adaptador vis",
+          "pl": "Nie znaleziono adaptera vis",
+          "uk": "Адаптер vis не знайдено",
+          "zh-cn": "找不到 vis 适配器"
+        },
+        "text": {
+          "en": "These widgets need the vis or the vis-2 adapter. Install one of them if you want to use them.",
+          "de": "Diese Widgets benötigen den Adapter vis oder vis-2. Installieren Sie einen davon, wenn Sie sie verwenden möchten.",
+          "ru": "Этим виджетам нужен адаптер vis или vis-2. Установите один из них, если хотите их использовать.",
+          "pt": "Estes widgets precisam do adaptador vis ou vis-2. Instale um deles se os quiser usar.",
+          "nl": "Deze widgets hebben de adapter vis of vis-2 nodig. Installeer er één als u ze wilt gebruiken.",
+          "fr": "Ces widgets nécessitent l’adaptateur vis ou vis-2. Installez l’un des deux si vous voulez les utiliser.",
+          "it": "Questi widget richiedono l’adattatore vis o vis-2. Installane uno se vuoi usarli.",
+          "es": "Estos widgets necesitan el adaptador vis o vis-2. Instale uno de ellos si quiere usarlos.",
+          "pl": "Te widżety wymagają adaptera vis lub vis-2. Zainstaluj jeden z nich, jeśli chcesz ich używać.",
+          "uk": "Цим віджетам потрібен адаптер vis або vis-2. Встановіть один із них, якщо хочете їх використовувати.",
+          "zh-cn": "这些小部件需要 vis 或 vis-2 适配器。如需使用，请安装其中之一。"
+        },
+        "level": "info",
+        "buttons": [
+          "ok",
+          "cancel"
+        ]
+      },
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "vis-2<2.12.8"
+          ]
+        },
+        "title": {
+          "en": "vis-2 is too old",
+          "de": "vis-2 ist zu alt",
+          "ru": "vis-2 слишком старый",
+          "pt": "vis-2 é demasiado antigo",
+          "nl": "vis-2 is te oud",
+          "fr": "vis-2 est trop ancien",
+          "it": "vis-2 è troppo vecchio",
+          "es": "vis-2 es demasiado antiguo",
+          "pl": "vis-2 jest zbyt stary",
+          "uk": "vis-2 застарий",
+          "zh-cn": "vis-2 版本过旧"
+        },
+        "text": {
+          "en": "The React widgets require vis-2 2.12.8 or newer. With an older vis-2 the widgets of vis-1 are used.",
+          "de": "Die React-Widgets benötigen vis-2 2.12.8 oder neuer. Mit einem älteren vis-2 werden die Widgets von vis-1 verwendet.",
+          "ru": "React-виджеты требуют vis-2 2.12.8 или новее. Со старым vis-2 используются виджеты vis-1.",
+          "pt": "Os widgets React requerem vis-2 2.12.8 ou mais recente. Com um vis-2 mais antigo são usados os widgets do vis-1.",
+          "nl": "De React-widgets vereisen vis-2 2.12.8 of nieuwer. Met een oudere vis-2 worden de vis-1-widgets gebruikt.",
+          "fr": "Les widgets React nécessitent vis-2 2.12.8 ou plus récent. Avec un vis-2 plus ancien, les widgets de vis-1 sont utilisés.",
+          "it": "I widget React richiedono vis-2 2.12.8 o successivo. Con un vis-2 più vecchio vengono usati i widget di vis-1.",
+          "es": "Los widgets de React requieren vis-2 2.12.8 o superior. Con un vis-2 más antiguo se usan los widgets de vis-1.",
+          "pl": "Widżety React wymagają vis-2 2.12.8 lub nowszego. Ze starszym vis-2 używane są widżety vis-1.",
+          "uk": "React-віджети потребують vis-2 2.12.8 або новіше. Зі старішим vis-2 використовуються віджети vis-1.",
+          "zh-cn": "React 小部件需要 vis-2 2.12.8 或更高版本。使用较旧的 vis-2 时将使用 vis-1 的小部件。"
+        },
+        "level": "warn",
+        "buttons": [
+          "ok"
+        ]
+      }
+    ],
+    "visWidgets": {
+      "visColorpicker": {
+        "i18n": "component",
+        "name": "visColorpicker",
+        "url": "vis-2-widgets-colorpicker/customWidgets.js",
+        "bundlerType": "module",
+        "components": [
+          "Spectrum",
+          "SpectrumHomematic",
+          "Farbtastic",
+          "RgbColor",
+          "HueColor",
+          "HuePickerXY",
+          "HueIndicatorXY",
+          "HuePickerCT",
+          "HueIndicatorCT"
+        ]
+      }
+    }
   },
   "native": {},
   "instanceObjects": []
