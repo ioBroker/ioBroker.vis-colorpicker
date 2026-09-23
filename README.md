@@ -92,6 +92,8 @@ Every widget with its settings and screenshots: [English](docs/en/README.md) | [
 ### 0.1.0 (2015-07-09)
 * (bluefox) initial checkin
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 The MIT License (MIT)
 
